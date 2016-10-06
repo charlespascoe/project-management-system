@@ -25,7 +25,7 @@ CREATE TABLE `user` (
     `other_names` varchar(128) NOT NULL,
     `pass_hash` varchar(256) NOT NULL,
     `active` bool NOT NULL DEFAULT TRUE,
-    `sysadmin` bool NOT NULL DEFAULT FALSE
+    `sysadmin` bool NOT NULL DEFAULT FALSE,
 
     PRIMARY KEY (`user_id`)
 );
@@ -33,10 +33,10 @@ CREATE TABLE `user` (
 CREATE TABLE `authentication_token` (
     `user_id` int(11) NOT NULL,
     `access_token_hash` varchar(128) NOT NULL,
-    `access_token_expires` timestamp NOT NULL,
+    `access_token_expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `refresh_token_hash` varchar(128) NOT NULL,
-    `refresh_token_expires` timestamp NOT NULL,
-    `sysadmin_elevation_expires` timestamp NULL DEFAULT NULL,
+    `refresh_token_expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `sysadmin_elevation_expires` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT `authenticated_user_fk`
         FOREIGN KEY (`user_id`)
@@ -59,6 +59,14 @@ CREATE TABLE `role` (
     PRIMARY KEY (`role_id`)
 );
 
+CREATE TABLE `permission` (
+    `permission_id` int(11) NOT NULL AUTO_INCREMENT,
+    `permission_key` varchar(64) NOT NULL UNIQUE,
+    `description` varchar(256) NOT NULL,
+
+    PRIMARY KEY (`permission_id`)
+);
+
 CREATE TABLE `role_permission` (
     `role_id` int(11) NOT NULL,
     `permission_id` int(11) NOT NULL,
@@ -72,14 +80,6 @@ CREATE TABLE `role_permission` (
         FOREIGN KEY (`role_id`)
         REFERENCES `role` (`role_id`)
         ON DELETE CASCADE
-);
-
-CREATE TABLE `permission` (
-    `permission_id` int(11) NOT NULL AUTO_INCREMENT,
-    `permission_key` varchar(64) NOT NULL UNIQUE,
-    `description` varchar(256) NOT NULL
-
-    PRIMARY KEY (`permission_id`)
 );
 
 CREATE TABLE `project_assignment` (
