@@ -1,11 +1,10 @@
 import Utils from '../utils';
 
 export default class Transaction {
-  constructor(id, conn, dbLogger, releaseAfterTransaction = true) {
+  constructor(id, conn, dbLogger) {
     this.id = id;
     this.conn = conn;
     this.dbLogger = dbLogger.child({transactionId: this.id});
-    this.releaseAfterTransaction = releaseAfterTransaction;
   }
 
   async query(statement, data = {}) {
@@ -28,7 +27,7 @@ export default class Transaction {
     try {
       await Utils.promisify(this.conn.commit)();
 
-      if (this.releaseAfterTransaction) this.release();
+      this.conn.release();
     } catch (e) {
       this.dbLogger.error({err: e}, 'An error occurred when committing a transaction');
       e.logged = true;
@@ -40,15 +39,11 @@ export default class Transaction {
     try {
       await Utils.promisify(this.conn.rollback)();
 
-      if (this.releaseAfterTransaction) this.release();
+      this.conn.release();
     } catch (e) {
       this.dbLogger.error({err: e}, 'An error occurred when rolling back a transaction');
       e.logged = true;
       throw e;
     }
-  }
-
-  release() {
-    this.conn.release();
   }
 }
