@@ -19,6 +19,7 @@ export default class Transaction {
 
   async queryForOne(statement, data = {}) {
     var results = await this.query(statement, data);
+    if (!(results instanceof Array)) return results;
     if (results.length < 1) return null;
     return result[0];
   }
