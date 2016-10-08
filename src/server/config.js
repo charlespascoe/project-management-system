@@ -1,4 +1,5 @@
 import configuration from './configuration';
+import bunyan from 'bunyan';
 import loggers from './loggers';
 
 // Add other things to config here e.g. default values/env variables
