@@ -7,7 +7,7 @@ import loggers from '../loggers';
 // This class encapsulates the callback-driven database driver with promises and extra functionality
 export class Database {
   constructor(config, dbLogger) {
-    this.pool = mysql.createPool(config);
+    this.pool = Utils.promisify(mysql.createPool(config));
     this.dbLogger = dbLogger;
     this.nextTransactionId = 0;
   }
@@ -16,7 +16,7 @@ export class Database {
     try {
       this.dbLogger.trace({statement: statement, data: data});
 
-      return await Utils.promisify(this.pool.query)(statement, data);
+      return await this.pool.query(statement, data);
     } catch (e) {
       this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query');
       e.logged = true;
@@ -32,9 +32,11 @@ export class Database {
   }
 
   async transaction(func) {
-    var connection = await Utils.promisify(this.pool.getConnection)();
+    var connection = await this.pool.getConnection();
 
-    await Utils.promisify(connection.beginTransaction)();
+    Utils.promisify(connection);
+
+    await connection.beginTransaction();
 
     return new Transaction(this.nextTransactionId++, connection, this.dbLogger);
   }

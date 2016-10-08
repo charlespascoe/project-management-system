@@ -3,7 +3,7 @@ import Utils from '../utils';
 export default class Transaction {
   constructor(id, conn, dbLogger) {
     this.id = id;
-    this.conn = conn;
+    this.conn = Utils.promisify(conn);
     this.dbLogger = dbLogger.child({transactionId: this.id});
     this.dbLogger.trace('Starting transaction');
   }
@@ -12,7 +12,7 @@ export default class Transaction {
     try {
       this.dbLogger.trace({statement: statement, data: data});
 
-      return await Utils.promisify(this.conn.query)(statement, data);
+      return await this.conn.query(statement, data);
     } catch (e) {
       this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
       e.logged = true;
@@ -31,7 +31,7 @@ export default class Transaction {
     try {
       this.dbLogger.trace('Committing transaction');
 
-      await Utils.promisify(this.conn.commit)();
+      await this.conn.commit();
 
       this.conn.release();
     } catch (e) {
@@ -45,7 +45,7 @@ export default class Transaction {
     try {
       this.dbLogger.trace('Rolling back transaction');
 
-      await Utils.promisify(this.conn.rollback)();
+      await this.conn.rollback();
 
       this.conn.release();
     } catch (e) {
