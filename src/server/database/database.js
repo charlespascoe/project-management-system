@@ -14,6 +14,8 @@ export class Database {
 
   async query(statement, data = {}) {
     try {
+      this.dbLogger.trace({statement: statement, data: data});
+
       return await Utils.promisify(this.pool.query)(statement, data);
     } catch (e) {
       this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query');

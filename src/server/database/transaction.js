@@ -5,10 +5,13 @@ export default class Transaction {
     this.id = id;
     this.conn = conn;
     this.dbLogger = dbLogger.child({transactionId: this.id});
+    this.dbLogger.trace('Starting transaction');
   }
 
   async query(statement, data = {}) {
     try {
+      this.dbLogger.trace({statement: statement, data: data});
+
       return await Utils.promisify(this.conn.query)(statement, data);
     } catch (e) {
       this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
@@ -26,6 +29,8 @@ export default class Transaction {
 
   async commit() {
     try {
+      this.dbLogger.trace('Committing transaction');
+
       await Utils.promisify(this.conn.commit)();
 
       this.conn.release();
@@ -38,6 +43,8 @@ export default class Transaction {
 
   async rollback() {
     try {
+      this.dbLogger.trace('Rolling back transaction');
+
       await Utils.promisify(this.conn.rollback)();
 
       this.conn.release();
