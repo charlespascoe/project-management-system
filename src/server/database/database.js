@@ -1,6 +1,8 @@
 import mysql from 'mysql';
 import Transaction from './transaction';
 import Utils from '../utils';
+import config from '../config';
+import loggers from '../loggers';
 
 // This class encapsulates the callback-driven database driver with promises and extra functionality
 export class Database {
@@ -34,3 +36,5 @@ export class Database {
     return new Transaction(this.nextTransactionId++, connection, this.dbLogger);
   }
 }
+
+export default new Database(config.db, loggers.db);
