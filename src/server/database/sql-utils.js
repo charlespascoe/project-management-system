@@ -3,7 +3,7 @@ export default class SqlUtils {
     return identifier.replace(/[^0-9,a-z,A-Z_]/, '');
   }
 
-  static formatData(data, tableName = null) {
+  static formatData(data, tableName = null, join = ', ') {
     var setValues = [];
 
     if (tableName) {
@@ -15,7 +15,7 @@ export default class SqlUtils {
 
       setValues.push(`${tableName}\`${colName}\` = :${colName}`);
 
-      return setValues.join(', ');
+      return setValues.join(join);
     }
   }
 }
