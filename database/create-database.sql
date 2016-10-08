@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.0.10.1
+# Version: 0.11.0
 # Last Modified: 22/04/2016
 
 # Drop the existing database (this is a create script, not an update script!)
