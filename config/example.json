@@ -6,6 +6,7 @@
     "database": "proj_mgr"
   },
   "logging": {
-    "level": "INFO"
+    "level": "INFO",
+    "src": false
   }
 }
