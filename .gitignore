@@ -35,3 +35,9 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# Build directories
+/.compiled-server/
+
+# Dev-specific config
+/config/development.json
