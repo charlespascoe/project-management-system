@@ -4,7 +4,7 @@ export default class Transaction {
   constructor(id, conn, dbLogger, releaseAfterTransaction = true) {
     this.id = id;
     this.conn = conn;
-    this.dbLogger = dbLogger;
+    this.dbLogger = dbLogger.child({transactionId: this.id});
     this.releaseAfterTransaction = releaseAfterTransaction;
   }
 
@@ -12,7 +12,7 @@ export default class Transaction {
     try {
       return await Utils.promisify(this.conn.query)(statement, data);
     } catch (e) {
-      this.dbLogger.error({err: e, query: statement, data: data, transaction_id: this.id}, 'An error occurred when executing a query in a transaction');
+      this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
       e.logged = true;
       throw e;
     }
@@ -30,7 +30,7 @@ export default class Transaction {
 
       if (this.releaseAfterTransaction) this.release();
     } catch (e) {
-      this.dbLogger.error({err: e, transaction_id: this.id}, 'An error occurred when committing a transaction');
+      this.dbLogger.error({err: e}, 'An error occurred when committing a transaction');
       e.logged = true;
       throw e;
     }
@@ -42,7 +42,7 @@ export default class Transaction {
 
       if (this.releaseAfterTransaction) this.release();
     } catch (e) {
-      this.dbLogger.error({err: e, transaction_id: this.id}, 'An error occurred when rolling back a transaction');
+      this.dbLogger.error({err: e}, 'An error occurred when rolling back a transaction');
       e.logged = true;
       throw e;
     }
