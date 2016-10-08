@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import database from './database/database';
 import loggers from './loggers';
 
