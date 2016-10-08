@@ -7,7 +7,20 @@ import loggers from '../loggers';
 // This class encapsulates the callback-driven database driver with promises and extra functionality
 export class Database {
   constructor(config, dbLogger) {
+    config.queryFormat = function (query, values) {
+      if (!values) return query;
+      return query.replace(/\:(\w+)/g, function (txt, key) {
+        if (values.hasOwnProperty(key)) {
+          return this.escape(values[key]);
+        }
+        return txt;
+      }.bind(this));
+    };
+
+    config.multipleStatements = true;
+
     this.pool = Utils.promisify(mysql.createPool(config));
+
     this.dbLogger = dbLogger;
     this.nextTransactionId = 0;
   }
