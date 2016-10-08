@@ -91,7 +91,7 @@ gulp.task('build-test', ['clean-tests', 'babel'], function () {
 
 gulp.task('build-dev', ['build'], function () {
   return gulp.src('./config/development.json')
-    .pipe(rename('config.json'))
+    .pipe(rename('configuration.json'))
     .pipe(gulp.dest('./.compiled-server'));
 });
 
