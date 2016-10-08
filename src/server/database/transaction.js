@@ -1,13 +1,21 @@
 import Utils from '../utils';
 
 export default class Transaction {
-  constructor(conn, releaseAfterTransaction = true) {
+  constructor(id, conn, dbLogger, releaseAfterTransaction = true) {
+    this.id = id;
     this.conn = conn;
+    this.dbLogger = dbLogger;
     this.releaseAfterTransaction = releaseAfterTransaction;
   }
 
-  query(statment, data = {}) {
-    return Utils.promisify(this.conn.query)(statement, data);
+  async query(statement, data = {}) {
+    try {
+      return await Utils.promisify(this.conn.query)(statement, data);
+    } catch (e) {
+      this.dbLogger.error({err: e, query: statement, data: data, transaction_id: this.id}, 'An error occurred when executing a query in a transaction');
+      e.logged = true;
+      throw e;
+    }
   }
 
   async queryForOne(statement, data = {}) {
@@ -17,15 +25,27 @@ export default class Transaction {
   }
 
   async commit() {
-    await Utils.promisify(this.conn.commit)();
+    try {
+      await Utils.promisify(this.conn.commit)();
 
-    if (this.releaseAfterTransaction) this.release();
+      if (this.releaseAfterTransaction) this.release();
+    } catch (e) {
+      this.dbLogger.error({err: e, transaction_id: this.id}, 'An error occurred when committing a transaction');
+      e.logged = true;
+      throw e;
+    }
   }
 
   async rollback() {
-    await Utils.promisify(this.conn.rollback)();
+    try {
+      await Utils.promisify(this.conn.rollback)();
 
-    if (this.releaseAfterTransaction) this.release();
+      if (this.releaseAfterTransaction) this.release();
+    } catch (e) {
+      this.dbLogger.error({err: e, transaction_id: this.id}, 'An error occurred when rolling back a transaction');
+      e.logged = true;
+      throw e;
+    }
   }
 
   release() {

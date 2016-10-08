@@ -4,12 +4,20 @@ import Utils from '../utils';
 
 // This class encapsulates the callback-driven database driver with promises and extra functionality
 export class Database {
-  constructor(config) {
+  constructor(config, dbLogger) {
     this.pool = mysql.createPool(config);
+    this.dbLogger = dbLogger;
+    this.nextTransactionId = 0;
   }
 
-  query(statement, data = {}) {
-    return Utils.promisify(this.pool.query)(statement, data);
+  async query(statement, data = {}) {
+    try {
+      return await Utils.promisify(this.pool.query)(statement, data);
+    } catch (e) {
+      this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query');
+      e.logged = true;
+      throw e;
+    }
   }
 
   async queryForOne(statement, data = {}) {
@@ -23,6 +31,6 @@ export class Database {
 
     await Utils.promisify(connection.beginTransaction)();
 
-    return new Transaction(connection);
+    return new Transaction(this.nextTransactionId++, connection, this.dbLogger);
   }
 }
