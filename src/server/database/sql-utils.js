@@ -8,14 +8,16 @@ export default class SqlUtils {
 
     if (tableName) {
       tableName = `\`${SqlUtils.removeInvalidChars(tableName)}\`.`;
+    } else {
+      tableName = '';
     }
 
     for (var column in data) {
       var colName = SqlUtils.removeInvalidChars(column);
 
       setValues.push(`${tableName}\`${colName}\` = :${colName}`);
-
-      return setValues.join(join);
     }
+
+    return setValues.join(join);
   }
 }
