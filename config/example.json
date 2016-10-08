@@ -4,5 +4,8 @@
     "user": "user",
     "password": "password",
     "database": "proj_mgr"
+  },
+  "logging": {
+    "level": "INFO"
   }
 }
