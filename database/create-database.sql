@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.11.0
+# Version: 0.12.0
 # Last Modified: 22/04/2016
 
 # Drop the existing database (this is a create script, not an update script!)
@@ -31,12 +31,15 @@ CREATE TABLE `user` (
 );
 
 CREATE TABLE `authentication_token` (
+    `token_id` int(11) NOT NULL AUTO_INCREMENT,
     `user_id` int(11) NOT NULL,
     `access_token_hash` varchar(128) NOT NULL,
     `access_token_expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `refresh_token_hash` varchar(128) NOT NULL,
     `refresh_token_expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `sysadmin_elevation_expires` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (`token_id`),
 
     CONSTRAINT `authenticated_user_fk`
         FOREIGN KEY (`user_id`)
