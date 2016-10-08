@@ -2,24 +2,29 @@ import Utils from '../utils';
 import SqlUtils from '../database/sql-utils';
 
 export default class Model {
-  constructor(database, tableName, idColumns, data) {
-    if (typeof idColumns == 'string') {
-      idColumns = [idColumns];
-    }
-
+  constructor(database, tableName, schema, data) {
     this._tableName = tableName;
-    this._idColumns = idColumns;
+    this._idColumns = [];
     this._database = database;
 
-    // Need to clone!
     this._previousData = Utils.copy(data);
     this._data = Utils.copy(data);
+
+    if (schema) {
+      this.defineSchema(schema);
+    }
   }
 
   defineSchema(schema) {
+    this._idColumns = [];
+
     for (var column in schema) {
-      if (this._data.hasOwnProperty(column)) {
+      if (!this._data.hasOwnProperty(column)) {
         throw new Error(`Data element expected: column ${column} not found on data for ${this._tableName}`);
+      }
+
+      if (schema[column].id) {
+        this._idColumns.push(column);
       }
 
       (function (col, meta) {
@@ -34,12 +39,28 @@ export default class Model {
           get: () => this._data[col],
           set: (value) => {
             // Type checking to go here
-            this._data=  value;
+            this._data[col] = value;
           }
         });
 
-      })(column, schema[column]);
+      }.bind(this))(column, schema[column]);
     }
+  }
+
+  // Maps model properties onto an object with the respective column names as keys
+  static mapPropertiesToColumns(schema, data) {
+    var columnData = {};
+
+    var transferredAny = false;
+
+    for (var column in schema) {
+      if (schema[column].property in data) {
+        columnData[column] = data[schema[column].property];
+        transferredAny = true;
+      }
+    }
+
+    return transferredAny ? columnData : null;
   }
 
   async save() {
@@ -65,7 +86,7 @@ export default class Model {
         `SET ${SqlUtils.formatData(changedFields)} ` +
         `WHERE ${SqlUtils.formatData(ids, null ,' AND ')};`
 
-    await this.database.query(query, this._data);
+    await this._database.query(query, this._data);
 
     this._previousData = Utils.copy(this._data);
   }
@@ -80,6 +101,6 @@ export default class Model {
     var query =
       `DELETE FROM \`${SqlUtils.removeInvalidChars(this._tableName)}\` WHERE ${SqlUtils.formatData(ids, null, ' AND ')};`;
 
-    await this.database.query(query, ids);
+    await this._database.query(query, ids);
   }
 }
