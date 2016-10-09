@@ -1,4 +1,4 @@
-import configuration from './configuration';
+import configuration from 'server/configuration';
 
 // Add other things to config here e.g. default values/env variables
 

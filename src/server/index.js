@@ -1,8 +1,20 @@
 import 'source-map-support/register';
-import database from './database/database';
-import loggers from './loggers';
+import database from 'server/database/database';
+import loggers from 'server/loggers';
+import User from 'server/models/user';
 
-database.query('SELECT * FROM user;')
-  .then((result) => loggers.db.debug(result))
-  .catch((err) => loggers.db.error(err));
+(async function() {
+  var result = await database.query('SELECT * FROM user;');
+  loggers.main.debug(result);
 
+  var userId = await User.addUser({
+    email: `bob-${Date.now()}@gmail.com`,
+    firstName: 'Bob',
+    otherNames: 'Smith',
+    passHash: '<hash>'
+  });
+
+  var user = await User.getUserById(userId);
+
+  loggers.main.debug(user.firstName);
+})().catch((err) => loggers.main.error(err));

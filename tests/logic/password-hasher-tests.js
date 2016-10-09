@@ -1,7 +1,7 @@
 import test from 'tape';
-import { PasswordHasher } from '../server/logic/password-hasher';
-import catchAsync from '../server/catch-async';
-import TestFrame from '../test-frame';
+import { PasswordHasher } from 'server/logic/password-hasher';
+import catchAsync from 'server/catch-async';
+import TestFrame from 'test-frame';
 
 const testSalt = Buffer.from('0123456789abcdef', 'hex'),
       testHash = '$argon2i$v=19$m=16384,t=32,p=1$ASNFZ4mrze8$pRRO6aqIjWtaF4dYF3QUBk+pEGDA4LdifM4jTyOj55o';

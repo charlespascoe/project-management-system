@@ -16,9 +16,10 @@ const args = require('yargs').argv,
       sourcemaps = require('gulp-sourcemaps'),
       uglify = require('gulp-uglify');
 
+const outputDir = './.compiled-server/server';
 
 gulp.task('clean', function (cb) {
-  rimraf('./.compiled-server', cb);
+  rimraf(outputDir, cb);
 });
 
 gulp.task('clean-tests', function (cb) {
@@ -30,7 +31,7 @@ gulp.task('babel', ['clean'], function () {
     .pipe(sourcemaps.init())
     .pipe(babel({plugins: ['transform-async-to-generator', 'transform-es2015-modules-commonjs']}))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('./.compiled-server'));
+    .pipe(gulp.dest(outputDir));
 });
 
 gulp.task('build', ['babel'], function () {
@@ -48,24 +49,24 @@ gulp.task('build', ['babel'], function () {
       .pipe(source(filename))
       .pipe(buffer())
       .pipe(gulpif(prod, uglify()))
-      .pipe(gulp.dest('./.compiled-server/public/js/' + relPath));
+      .pipe(gulp.dest(outputDir + '/public/js/' + relPath));
   }
 
   var mergeStrm = merge(
     gulp.src('./src/views/**/*.ejs')
-      .pipe(gulp.dest('./.compiled-server/views/')),
+      .pipe(gulp.dest(outputDir + '/views/')),
     gulp.src('./src/public/**/*')
-      .pipe(gulp.dest('./.compiled-server/public/')),
+      .pipe(gulp.dest(outputDir + '/public/')),
     gulp.src('./src/scripts/**/*')
-      .pipe(gulp.dest('./.compiled-server/scripts/')),
+      .pipe(gulp.dest(outputDir + '/scripts/')),
     gulp.src('./src/emails/**/*.*')
-      .pipe(gulp.dest('./.compiled-server/emails')),
+      .pipe(gulp.dest(outputDir + '/emails/')),
     gulp.src('./src/style/**/*.scss')
       .pipe(gulpif(!prod, sourcemaps.init()))
       .pipe(scss({outputStyle: 'compressed'}).on('error', scss.logError))
       .pipe(autoprefixer())
       .pipe(gulpif(!prod, sourcemaps.write('.')))
-      .pipe(gulp.dest('./.compiled-server/public/css/'))
+      .pipe(gulp.dest(outputDir + '/public/css/'))
   );
 
   var basePath = './src/client/entry';
@@ -80,7 +81,7 @@ gulp.task('build', ['babel'], function () {
 gulp.task('build-test', ['clean-tests', 'babel'], function () {
   return merge(
     gulp.src('./.compiled-server/**/*')
-      .pipe(gulp.dest('./.compiled-tests/server')),
+      .pipe(gulp.dest('./.compiled-tests/')),
     gulp.src('./tests/**/*.js')
       .pipe(sourcemaps.init())
       .pipe(babel({plugins: ['transform-async-to-generator', 'transform-es2015-modules-commonjs']}))
@@ -92,12 +93,12 @@ gulp.task('build-test', ['clean-tests', 'babel'], function () {
 gulp.task('build-dev', ['build'], function () {
   return gulp.src('./config/development.json')
     .pipe(rename('configuration.json'))
-    .pipe(gulp.dest('./.compiled-server'));
+    .pipe(gulp.dest(outputDir));
 });
 
 gulp.task('start', ['build-dev'], function () {
   return nodemon({
-    script: '.compiled-server/index.js',
+    script: outputDir + '/index.js',
     watch: 'src/**/*.*',
     ignore: '*.swp',
     tasks: ['build-dev']

@@ -1,8 +1,8 @@
 import mysql from 'mysql';
 import Transaction from './transaction';
-import Utils from '../utils';
-import config from '../config';
-import loggers from '../loggers';
+import Utils from 'server/utils';
+import config from 'server/config';
+import loggers from 'server/loggers';
 
 // This class encapsulates the callback-driven database driver with promises and extra functionality
 export class Database {

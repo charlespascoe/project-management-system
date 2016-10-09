@@ -1,5 +1,5 @@
-import Utils from '../utils';
-import SqlUtils from '../database/sql-utils';
+import Utils from 'server/utils';
+import SqlUtils from 'server/database/sql-utils';
 
 export default class Model {
   constructor(database, tableName, data, schema = null) {

@@ -1,5 +1,5 @@
-import Model from './model';
-import Schema from './schema';
+import Model from 'server/models/model';
+import Schema from 'server/models/schema';
 
 export default class AuthenticationToken extends Model {
   constructor(database, data) {

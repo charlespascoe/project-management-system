@@ -1,8 +1,8 @@
-import Model from './model';
-import Schema from './schema';
-import AuthenticationToken from './authentication-token';
-import database from '../database/database';
-import SqlUtils from '../database/sql-utils';
+import Model from 'server/models/model';
+import Schema from 'server/models/schema';
+import AuthenticationToken from 'server/models/authentication-token';
+import database from 'server/database/database';
+import SqlUtils from 'server/database/sql-utils';
 
 export default class User extends Model {
   constructor(database, data) {

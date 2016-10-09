@@ -1,6 +1,6 @@
 import bunyan from 'bunyan';
-import config from './config';
-import Utils from './utils';
+import config from 'server/config';
+import Utils from 'server/utils';
 
 const commonConfig = {
   serializers: { err: bunyan.stdSerializers.err },

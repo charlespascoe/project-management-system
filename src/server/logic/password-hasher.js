@@ -1,5 +1,5 @@
 import { argon2i as argon2 } from 'argon2-ffi';
-import CryptoUtils from '../crypto-utils';
+import CryptoUtils from 'server/crypto-utils';
 
 export class PasswordHasher {
   constructor(options) {

@@ -4,8 +4,8 @@
   "description": "Project Management System",
   "main": "index.js",
   "scripts": {
-    "test": "gulp build-test && tape $(find .compiled-tests/ -name '*-tests.js') | faucet",
-    "start": "gulp start | bunyan"
+    "test": "NODE_PATH=\"$NODE_PATH:.compiled-tests/\"; gulp build-test && tape $(find .compiled-tests/ -name '*-tests.js') | faucet",
+    "start": "NODE_PATH=\"$NODE_PATH:.compiled-server/\"; gulp start | bunyan"
   },
   "repository": {
     "type": "git",

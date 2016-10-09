@@ -1,4 +1,4 @@
-import Cookie from './cookie';
+import Cookie from 'server/controllers/cookie';
 
 export default class Result {
   constructor(statusCode = 200) {

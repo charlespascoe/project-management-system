@@ -1,4 +1,4 @@
-import Utils from '../utils';
+import Utils from 'server/utils';
 
 export class SchemaProperty {
   constructor(propName, config) {

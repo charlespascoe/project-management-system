@@ -1,4 +1,4 @@
-import Utils from '../utils';
+import Utils from 'server/utils';
 
 export default class Transaction {
   constructor(id, conn, dbLogger) {
