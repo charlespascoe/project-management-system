@@ -1,4 +1,8 @@
 export default class Utils {
+  static readonlyProperty(obj, name, value) {
+    Object.defineProperty(obj, name, {value: value});
+  }
+
   static defaults(defaults, additional) {
     return Object.assign(Utils.copy(defaults), additional);
   }
