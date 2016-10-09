@@ -4,17 +4,17 @@ export default class Transaction {
   constructor(id, conn, dbLogger) {
     this.id = id;
     this.conn = Utils.promisify(conn);
-    this.dbLogger = dbLogger.child({transactionId: this.id});
-    this.dbLogger.trace('Starting transaction');
+    this.transactionLogger = dbLogger.child({transactionId: this.id});
+    this.transactionLogger.debug('Starting transaction');
   }
 
   async query(statement, data = {}) {
     try {
-      this.dbLogger.trace({statement: statement, data: data});
+      this.transactionLogger.debug({statement: statement, data: data});
 
       return await this.conn.query(statement, data);
     } catch (e) {
-      this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
+      this.transactionLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
       e.logged = true;
       throw e;
     }
@@ -29,13 +29,13 @@ export default class Transaction {
 
   async commit() {
     try {
-      this.dbLogger.trace('Committing transaction');
+      this.transactionLogger.debug('Committing transaction');
 
       await this.conn.commit();
 
       this.conn.release();
     } catch (e) {
-      this.dbLogger.error({err: e}, 'An error occurred when committing a transaction');
+      this.transactionLogger.error({err: e}, 'An error occurred when committing a transaction');
       e.logged = true;
       throw e;
     }
@@ -43,13 +43,13 @@ export default class Transaction {
 
   async rollback() {
     try {
-      this.dbLogger.trace('Rolling back transaction');
+      this.transactionLogger.debug('Rolling back transaction');
 
       await this.conn.rollback();
 
       this.conn.release();
     } catch (e) {
-      this.dbLogger.error({err: e}, 'An error occurred when rolling back a transaction');
+      this.transactionLogger.error({err: e}, 'An error occurred when rolling back a transaction');
       e.logged = true;
       throw e;
     }

@@ -27,7 +27,7 @@ export class Database {
 
   async query(statement, data = {}) {
     try {
-      this.dbLogger.trace({statement: statement, data: data});
+      this.dbLogger.debug({statement: statement, data: data});
 
       return await this.pool.query(statement, data);
     } catch (e) {
