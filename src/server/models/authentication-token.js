@@ -1,31 +1,32 @@
 import Model from './model';
+import Schema from './schema';
 
 export default class AuthenticationToken extends Model {
   constructor(database, data) {
-    super(database, 'authentication_token', AuthenticationToken.schema, data);
+    super(database, 'authentication_token', data, AuthenticationToken.schema);
   }
 }
 
-AuthenticationToken.schema = {
-  token_id: {
-    property: 'id',
+AuthenticationToken.schema = new Schema({
+  id: {
+    column: 'token_id',
     id: true,
     readonly: true
   },
-  access_token_hash: {
-    property: 'accessTokenHash',
+  accessTokenHash: {
+    column: 'access_token_hash',
     readonly: true
   },
-  access_token_expires: {
-    property: 'accessTokenExpires',
+  accessTokenExpires: {
+    column: 'access_token_expires',
     readonly: true
   },
-  refresh_token_hash: {
-    property: 'refreshTokenHash',
+  refreshTokenHash: {
+    column: 'refresh_token_hash',
     readonly: true
   },
-  refresh_token_expires: {
-    property: 'refreshTokenExpires',
+  refreshTokenExpires: {
+    column: 'refresh_token_expires',
     readonly: true
   }
-};
+});

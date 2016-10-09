@@ -1,8 +1,9 @@
 import Model from './model';
+import Schema from './schema';
 
 export default class User extends Model {
   constructor(database, data) {
-    super(database, 'user', User.schema, data);
+    super(database, 'user', data, User.schema);
 
     this.authTokens = data.authTokens;
   }
@@ -13,25 +14,25 @@ export default class User extends Model {
   }
 }
 
-User.schema = {
-  user_id: {
-    property: 'id',
+User.schema = new Schema({
+  id: {
+    column: 'user_id',
     id: true,
     readonly: true
   },
   email: {
-    property: 'email'
+    column: 'email'
   },
-  first_name: {
-    property: 'firstName'
+  firstName: {
+    column: 'first_name'
   },
-  other_names: {
-    property: 'otherNames'
+  otherNames: {
+    column: 'other_names'
   },
-  pass_hash: {
-    property: 'passHash'
+  passHash: {
+    column: 'pass_hash'
   },
   active: {
-    property: 'active'
+    column: 'active'
   }
-};
+});

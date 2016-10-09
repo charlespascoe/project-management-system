@@ -44,7 +44,7 @@ export class UserManager {
   }
 
   async addUser(data) {
-    var columnData = Model.mapPropertiesToColumns(User.schema, data);
+    var columnData = User.schema.mapPropertiesToColumns(data);
 
     if (columnData == null) throw new Error('Invalid data provided to UserManager.addUser');
 
