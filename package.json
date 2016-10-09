@@ -43,6 +43,7 @@
     "yargs": "^6.0.0"
   },
   "dependencies": {
+    "argon2-ffi": "^1.0.1",
     "bunyan": "^1.8.1",
     "mysql": "^2.11.1"
   }
