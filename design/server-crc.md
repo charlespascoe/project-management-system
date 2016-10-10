@@ -17,13 +17,34 @@ Model
 -----
 * Knows
 * Does
+* Collaborators
+  * Schema
 
 User (Extends Model)
-----
+--------------------
 * Knows
   * Email
   * Names
   * Password Hash
 * Does
   *
+* Collaborators
+  * Model
+  * Schema
+
+Security Classes
+================
+
+PasswordHasher
+--------------
+* Does
+  * Hashes passwords
+  * Verifies passwords and password hashes
+
+Authenticator
+-------------
+* Does
+  * Authenticates user login requests
+* Collaborators
+  * PasswordHasher
 
