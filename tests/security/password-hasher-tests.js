@@ -1,5 +1,5 @@
 import test from 'tape';
-import { PasswordHasher } from 'server/logic/password-hasher';
+import { PasswordHasher } from 'server/security/password-hasher';
 import catchAsync from 'server/catch-async';
 import TestFrame from 'test-frame';
 
