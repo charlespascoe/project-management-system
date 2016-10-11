@@ -50,7 +50,7 @@ gulp.task('build', ['babel'], function () {
       .pipe(autoprefixer())
       .pipe(gulpif(!prod, sourcemaps.write('.')))
       .pipe(gulp.dest(outputDir + '/public/css/')),
-    browserify({entries: './src/client/app.js', debug: !prod})
+    browserify({entries: './src/client/app.js', debug: !prod, paths: ['./node_modules', './src/']})
       .transform(babelify, {presets: ['react', 'es2015'], plugins: ['transform-async-to-generator'], sourceMaps: !prod})
       .bundle()
       .pipe(source('app.js'))
