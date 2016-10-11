@@ -61,8 +61,50 @@ UserApi
 * Knows
   * The base URL for all requests
 * Does
-  * Handles get user information requests (names, email, etc.)
-  * Handles change user information requests
+  * Handles requests to get user information (names, email, etc.)
+  * Handles requests to change user information (except sysadmin status)
+* Collaborators
+  * RestResponse
+  * Response
+  * Status
+  * OAuthClient
+
+UserManagementApi
+-----------------
+* Knows
+  * The base URL for all requests
+* Does
+  * Handles requests to create a user
+  * Handles requests to deactivate a user
+  * Handles requests to trigger a password reset for a user (not the current user)
+  * Handles requests to change user details, including sysadmin status
+* Collaborators
+  * RestResponse
+  * Response
+  * Status
+  * OAuthClient
+
+ProjectApi
+----------
+* Knows
+  * The base URL for all requests
+* Does
+  * Handles requests to get all projects the user can see
+  * Handles requests to get all tasks in a project
+* Collaborators
+  * RestResponse
+  * Response
+  * Status
+  * OAuthClient
+
+ProjectManagementApi
+--------------------
+* Knows
+  * The base URL for all requests
+* Does
+  * Handles requests to create a project
+  * Handles requests to delete a project
+  * Handles requests to
 * Collaborators
   * RestResponse
   * Response
