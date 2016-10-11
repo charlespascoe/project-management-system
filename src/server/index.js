@@ -2,19 +2,18 @@ import 'source-map-support/register';
 import database from 'server/database/database';
 import loggers from 'server/loggers';
 import users from 'server/database/users';
+import express from 'express';
+import rootRouter from 'server/routers/root';
 
-(async function() {
-  var result = await database.query('SELECT * FROM user;');
-  loggers.main.debug(result);
+const app = express();
 
-  var userId = await users.addUser({
-    email: `bob-${Date.now()}@gmail.com`,
-    firstName: 'Bob',
-    otherNames: 'Smith',
-    passHash: '<hash>'
-  });
+app.locals.appName = 'Jeera';
+app.locals.version = '0.0.0-DEV';
 
-  var user = await users.getUserById(userId);
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views/pages');
 
-  loggers.main.debug(user.firstName);
-})().catch((err) => loggers.main.error(err));
+app.use('/public', express.static(__dirname + '/public'));
+app.use('/', rootRouter);
+
+app.listen(8080, (e) => e ? loggers.main.fatal({err: e}) : loggers.main.info('Listening on port 8080'));
