@@ -37,28 +37,11 @@ gulp.task('babel', ['clean'], function () {
 gulp.task('build', ['babel'], function () {
   var prod = args.production;
 
-  function br(sourcePath, basePath) {
-    var r = sourcePath.match(/[A-Za-z0-9_-]+\.js$/);
-    if (r == null) return null;
-    var filename = r[0],
-        relPath = sourcePath.replace(basePath, '').replace(/^\//, '').replace(/[A-Za-z0-9_-]+\.js$/, '');
-
-    return browserify({entries: sourcePath, debug: !prod})
-      .transform(babelify, {presets: ['react', 'es2015'], plugins: ['transform-async-to-generator'], sourceMaps: !prod})
-      .bundle()
-      .pipe(source(filename))
-      .pipe(buffer())
-      .pipe(gulpif(prod, uglify()))
-      .pipe(gulp.dest(outputDir + '/public/js/' + relPath));
-  }
-
   var mergeStrm = merge(
     gulp.src('./src/views/**/*.ejs')
       .pipe(gulp.dest(outputDir + '/views/')),
     gulp.src('./src/public/**/*')
       .pipe(gulp.dest(outputDir + '/public/')),
-    gulp.src('./src/scripts/**/*')
-      .pipe(gulp.dest(outputDir + '/scripts/')),
     gulp.src('./src/emails/**/*.*')
       .pipe(gulp.dest(outputDir + '/emails/')),
     gulp.src('./src/style/**/*.scss')
@@ -66,14 +49,15 @@ gulp.task('build', ['babel'], function () {
       .pipe(scss({outputStyle: 'compressed'}).on('error', scss.logError))
       .pipe(autoprefixer())
       .pipe(gulpif(!prod, sourcemaps.write('.')))
-      .pipe(gulp.dest(outputDir + '/public/css/'))
+      .pipe(gulp.dest(outputDir + '/public/css/')),
+    browserify({entries: './src/client/app.js', debug: !prod})
+      .transform(babelify, {presets: ['react', 'es2015'], plugins: ['transform-async-to-generator'], sourceMaps: !prod})
+      .bundle()
+      .pipe(source('app.js'))
+      .pipe(buffer())
+      .pipe(gulpif(prod, uglify()))
+      .pipe(gulp.dest(outputDir + '/public/js/'))
   );
-
-  var basePath = './src/client/entry';
-  glob.sync(basePath + '/**/*.js')
-    .map(path => br(path, basePath))
-    .filter(strm => strm != null)
-    .forEach(strm => mergeStrm.add(strm));
 
   return mergeStrm;
 });
