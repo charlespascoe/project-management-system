@@ -10,21 +10,23 @@ const catchHandler = catchAsync(function (err, st) {
 const tests = new TestFrame('Authenticator');
 tests.createInstance = function () {
   var dummyUser = {
+    id: 123,
     email: 'bob@gmail.com',
     passHash: '<hash>'
   };
 
   var users = {
     getUserByEmailResult: dummyUser,
-    getUserByEmail: async () => this.getUserByEmailResult
+    getUserByEmail: async () => users.getUserByEmailResult
   };
 
   var authTokens = {
+    addToken: async () => 123
   };
 
   var passHasher = {
     verifyUserPasswordResult: true,
-    verifyUserPassword: async () => this.verifyUserPasswordResult
+    verifyUserPassword: async () => passHasher.verifyUserPasswordResult
   };
 
   return new Authenticator(passHasher, users, authTokens);
@@ -43,6 +45,13 @@ tests.testMethod('login', function (t) {
     authenticator.passHasher.verifyUserPasswordResult = false;
     var result = await authenticator.login('bob@gmail.com', 'password');
     st.equals(result, null);
+    st.end();
+  }));
+
+  t.test('It should return the auth token for the correct password', catchHandler(async function (st, authenticator) {
+    var result = await authenticator.login('bob@gmail.com', 'password');
+    st.ok(Buffer.isBuffer(result.accessKey));
+    st.ok(Buffer.isBuffer(result.refreshKey));
     st.end();
   }));
 });

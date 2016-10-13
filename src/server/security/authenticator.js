@@ -19,11 +19,11 @@ export class Authenticator {
 
     if (user == null) return null;
 
-    var correctPass = await this.passwordHasher.verifyUserPassword(password, user);
+    var correctPass = await this.passHasher.verifyUserPassword(password, user);
 
     if (!correctPass) return null;
 
-    return user;
+    return await this.generateAuthenticationToken(user);
   }
 
   async generateAuthenticationToken(user, accessExpires = null, refreshExpires = null) {
