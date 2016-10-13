@@ -19,12 +19,15 @@ tests.createInstance = function () {
     getUserByEmail: async () => this.getUserByEmailResult
   };
 
+  var authTokens = {
+  };
+
   var passHasher = {
     verifyUserPasswordResult: true,
     verifyUserPassword: async () => this.verifyUserPasswordResult
   };
 
-  return new Authenticator(passHasher, users);
+  return new Authenticator(passHasher, users, authTokens);
 };
 
 
@@ -40,6 +43,32 @@ tests.testMethod('login', function (t) {
     authenticator.passHasher.verifyUserPasswordResult = false;
     var result = await authenticator.login('bob@gmail.com', 'password');
     st.equals(result, null);
+    st.end();
+  }));
+});
+
+tests.testMethod('generateAuthenticationToken', function (t) {
+  t.test('It should return the access and refresh keys as expected', catchHandler(async function (st, authenticator) {
+    var user = {
+      id: 123
+    };
+
+    var accessExpires = new Date(Date.now() + 1234),
+        refreshExpires = new Date(Date.now() + 5678);
+
+    authenticator.authTokens.addToken = async function (data) {
+      st.equals(data.userId, user.id);
+      st.ok(data.accessKeyHash.match(/([a-f0-9]{2})+/i));
+      st.equals(data.accessKeyExpires, accessExpires);
+      st.ok(data.refreshKeyHash.match(/([a-f0-9]{2})+/i));
+      st.equals(data.refreshKeyExpires, refreshExpires);
+    };
+
+    var authToken = await authenticator.generateAuthenticationToken(user, accessExpires, refreshExpires);
+
+    st.ok(Buffer.isBuffer(authToken.accessKey));
+    st.ok(Buffer.isBuffer(authToken.refreshKey));
+
     st.end();
   }));
 });
