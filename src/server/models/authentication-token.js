@@ -13,19 +13,23 @@ AuthenticationToken.schema = new Schema({
     id: true,
     readonly: true
   },
-  accessTokenHash: {
+  userId: {
+    column: 'user_id',
+    readonly: true
+  },
+  accessKeyHash: {
     column: 'access_token_hash',
     readonly: true
   },
-  accessTokenExpires: {
+  accessKeyExpires: {
     column: 'access_token_expires',
     readonly: true
   },
-  refreshTokenHash: {
+  refreshKeyHash: {
     column: 'refresh_token_hash',
     readonly: true
   },
-  refreshTokenExpires: {
+  refreshKeyExpires: {
     column: 'refresh_token_expires',
     readonly: true
   }
