@@ -1,7 +1,6 @@
 import CryptoUtils from 'server/crypto-utils';
 import catchAsync from 'server/catch-async';
-import test from 'tape';
-import TestFrame from 'test-frame';
+import TestFrame from 'tests/test-frame';
 
 const TEST_HASH = Buffer.from('94ee059335e587e501cc4bf90613e0814f00a7b08bc7c648fd865a2af6a22cc2', 'hex'),
       HMAC_KEY = Buffer.from('secret'),

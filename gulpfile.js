@@ -70,7 +70,7 @@ gulp.task('build-test', ['clean-tests', 'babel'], function () {
       .pipe(sourcemaps.init())
       .pipe(babel({plugins: ['transform-async-to-generator', 'transform-es2015-modules-commonjs']}))
       .pipe(sourcemaps.write('.'))
-      .pipe(gulp.dest('./.compiled-tests')),
+      .pipe(gulp.dest('./.compiled-tests/tests')),
     gulp.src('./config/development.json')
       .pipe(rename('configuration.json'))
       .pipe(gulp.dest('./.compiled-tests/server'))
