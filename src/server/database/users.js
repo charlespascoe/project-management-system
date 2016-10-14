@@ -1,5 +1,5 @@
 import User from 'server/models/user';
-import AuthenticationToken from 'server/models/authentication-token';
+import AuthenticationTokenPair from 'server/models/authentication-token-pair';
 import SqlUtils from 'server/database/sql-utils';
 import database from 'server/database/database';
 
@@ -35,7 +35,7 @@ export class Users {
 
     if (userResult == null) return null;
 
-    userResult.authTokens = authTokensResult.map((row) => new AuthenticationToken(this.database, row));
+    userResult.authTokens = authTokensResult.map((row) => new AuthenticationTokenPair(this.database, row));
 
     return new User(this.database, userResult);
   }

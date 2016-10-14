@@ -23,12 +23,12 @@ export class Authenticator {
 
     if (!correctPass) return null;
 
-    return await this.generateAuthenticationToken(user);
+    return await this.generateAuthenticationTokenPair(user);
   }
 
-  async generateAuthenticationToken(user, accessExpires = null, refreshExpires = null) {
-    var accessKey = await CryptoUtils.randomBytes(keyLength),
-        refreshKey = await CryptoUtils.randomBytes(keyLength);
+  async generateAuthenticationTokenPair(user, accessExpires = null, refreshExpires = null) {
+    var accessToken = await CryptoUtils.randomBytes(keyLength),
+        refreshToken = await CryptoUtils.randomBytes(keyLength);
 
     if (accessExpires == null) {
       accessExpires = new Date(Date.now() + accessExpiry);
@@ -40,15 +40,15 @@ export class Authenticator {
 
     await this.authTokens.addToken({
       userId: user.id,
-      accessKeyHash: CryptoUtils.hash(accessKey).toString('hex'),
-      accessKeyExpires: accessExpires,
-      refreshKeyHash: CryptoUtils.hash(refreshKey).toString('hex'),
-      refreshKeyExpires: refreshExpires
+      accessTokenHash: CryptoUtils.hash(accessToken).toString('hex'),
+      accessTokenExpires: accessExpires,
+      refreshTokenHash: CryptoUtils.hash(refreshToken).toString('hex'),
+      refreshTokenExpires: refreshExpires
     });
 
     return {
-      accessKey: accessKey,
-      refreshKey: refreshKey
+      accessToken: accessToken,
+      refreshToken: refreshToken
     };
   }
 }

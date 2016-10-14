@@ -1,4 +1,4 @@
-import AuthenticationToken from 'server/models/authentication-token';
+import AuthenticationTokenPair from 'server/models/authentication-token-pair';
 import database from 'server/database/database';
 
 export class AuthenticationTokens {
@@ -6,17 +6,17 @@ export class AuthenticationTokens {
     this.database = database;
   }
 
-  async getAuthTokenById(id) {
+  async getAuthTokenPairById(id) {
     var query =
       'SELECT * FROM `authentication_token` WHERE `token_id` = :token_id;';
 
     var result = await this.database.queryForOne(query, {token_id: id});
 
-    return new AuthenticationToken(this.database, result);
+    return new AuthenticationTokenPair(this.database, result);
   }
 
-  async addToken(data) {
-    var columnData = AuthenticationToken.schema.mapPropertiesToColumns(data);
+  async addTokenPair(data) {
+    var columnData = AuthenticationTokenPair.schema.mapPropertiesToColumns(data);
 
     delete columnData.token_id;
 

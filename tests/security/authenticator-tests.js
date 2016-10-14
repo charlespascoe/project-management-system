@@ -50,14 +50,14 @@ tests.testMethod('login', function (t) {
 
   t.test('It should return the auth token for the correct password', catchHandler(async function (st, authenticator) {
     var result = await authenticator.login('bob@gmail.com', 'password');
-    st.ok(Buffer.isBuffer(result.accessKey));
-    st.ok(Buffer.isBuffer(result.refreshKey));
+    st.ok(Buffer.isBuffer(result.accessToken));
+    st.ok(Buffer.isBuffer(result.refreshToken));
     st.end();
   }));
 });
 
-tests.testMethod('generateAuthenticationToken', function (t) {
-  t.test('It should return the access and refresh keys as expected', catchHandler(async function (st, authenticator) {
+tests.testMethod('generateAuthenticationTokenPair', function (t) {
+  t.test('It should return the access and refresh tokens as expected', catchHandler(async function (st, authenticator) {
     var user = {
       id: 123
     };
@@ -67,16 +67,16 @@ tests.testMethod('generateAuthenticationToken', function (t) {
 
     authenticator.authTokens.addToken = async function (data) {
       st.equals(data.userId, user.id);
-      st.ok(data.accessKeyHash.match(/([a-f0-9]{2})+/i));
-      st.equals(data.accessKeyExpires, accessExpires);
-      st.ok(data.refreshKeyHash.match(/([a-f0-9]{2})+/i));
-      st.equals(data.refreshKeyExpires, refreshExpires);
+      st.ok(data.accessTokenHash.match(/([a-f0-9]{2})+/i));
+      st.equals(data.accessTokenExpires, accessExpires);
+      st.ok(data.refreshTokenHash.match(/([a-f0-9]{2})+/i));
+      st.equals(data.refreshTokenExpires, refreshExpires);
     };
 
-    var authToken = await authenticator.generateAuthenticationToken(user, accessExpires, refreshExpires);
+    var authToken = await authenticator.generateAuthenticationTokenPair(user, accessExpires, refreshExpires);
 
-    st.ok(Buffer.isBuffer(authToken.accessKey));
-    st.ok(Buffer.isBuffer(authToken.refreshKey));
+    st.ok(Buffer.isBuffer(authToken.accessToken));
+    st.ok(Buffer.isBuffer(authToken.refreshToken));
 
     st.end();
   }));

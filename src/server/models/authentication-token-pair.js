@@ -1,13 +1,13 @@
 import Model from 'server/models/model';
 import Schema from 'server/models/schema';
 
-export default class AuthenticationToken extends Model {
+export default class AuthenticationTokenPair extends Model {
   constructor(database, data) {
     super(database, 'authentication_token', data, AuthenticationToken.schema);
   }
 }
 
-AuthenticationToken.schema = new Schema({
+AuthenticationTokenPair.schema = new Schema({
   id: {
     column: 'token_id',
     id: true,
@@ -17,19 +17,19 @@ AuthenticationToken.schema = new Schema({
     column: 'user_id',
     readonly: true
   },
-  accessKeyHash: {
+  accessTokenHash: {
     column: 'access_token_hash',
     readonly: true
   },
-  accessKeyExpires: {
+  accessTokenExpires: {
     column: 'access_token_expires',
     readonly: true
   },
-  refreshKeyHash: {
+  refreshTokenHash: {
     column: 'refresh_token_hash',
     readonly: true
   },
-  refreshKeyExpires: {
+  refreshTokenExpires: {
     column: 'refresh_token_expires',
     readonly: true
   }
