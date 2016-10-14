@@ -2,16 +2,18 @@ import passwordHasher from 'server/security/password-hasher';
 import users from 'server/database/users';
 import authenticationTokens from 'server/database/authentication-tokens';
 import CryptoUtils from 'server/crypto-utils';
+import validate from 'server/validation';
 
 const keyLength = 32,
       accessExpiry = 24 * 60 * 60 * 1000,
       refreshExpiry = 30 * 24 * 60 * 60 * 1000;
 
 export class Authenticator {
-  constructor(passHasher, users, authTokens) {
+  constructor(passHasher, users, authTokens, validate) {
     this.passHasher = passHasher;
     this.users = users;
     this.authTokens = authTokens;
+    this.validate = validate;
   }
 
   async login(username, password) {
@@ -47,10 +49,29 @@ export class Authenticator {
     });
 
     return {
-      accessToken: accessToken,
-      refreshToken: refreshToken
+      accessToken: Buffer.from(`${user.id}:${accessToken.toString('hex')}`).toString('base64'),
+      refreshToken: Buffer.from(`${user.id}:${refreshToken.toString('hex')}`).toString('base64')
+    };
+  }
+
+  parseBase64Token(b64Token) {
+    if (!this.validate(b64Token).isString().isBase64().isValid()) return null;
+
+    var components = Buffer.from(b64Token, 'base64').toString('utf8').split(':');
+
+    if (!this.validate(components[0]).matches(/[0-9]+/).isValid() ||
+        !this.validate(components[1]).isHex().isValid()) {
+      return null;
+    }
+
+    var userId = parseInt(components[0]),
+        token = Buffer.from(components[1], 'hex');
+
+    return {
+      userId: userId,
+      token: token
     };
   }
 }
 
-export default new Authenticator(passwordHasher, users, authenticationTokens);
+export default new Authenticator(passwordHasher, users, authenticationTokens, validate);
