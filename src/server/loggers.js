@@ -14,5 +14,8 @@ export default {
   })),
   db: bunyan.createLogger(Utils.defaults(commonConfig, {
     name: 'db'
+  })),
+  security: bunyan.createLogger(Utils.defaults(commonConfig, {
+    name: 'security'
   }))
 };
