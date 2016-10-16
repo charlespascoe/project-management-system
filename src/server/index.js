@@ -4,6 +4,7 @@ import loggers from 'server/loggers';
 import users from 'server/database/users';
 import express from 'express';
 import rootRouter from 'server/routers/root';
+import bodyParser from 'body-parser';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views/pages');
 
 app.use('/public', express.static(__dirname + '/public'));
+app.use(bodyParser.json());
 app.use('/', rootRouter);
 
 app.listen(8080, (e) => e ? loggers.main.fatal({err: e}) : loggers.main.info('Listening on port 8080'));
