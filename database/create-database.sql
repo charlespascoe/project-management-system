@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.12.0
+# Version: 0.12.1
 # Last Modified: 22/04/2016
 
 # Drop the existing database (this is a create script, not an update script!)
@@ -50,7 +50,7 @@ CREATE TABLE `authentication_token` (
 CREATE TABLE `project` (
     `project_id` int(11) NOT NULL AUTO_INCREMENT,
     `project_name` varchar(64) NOT NULL UNIQUE,
-    `active` bool NOT NULL DEFAULT TRUE,
+    `completed` bool NOT NULL DEFAULT FALSE,
 
     PRIMARY KEY (`project_id`)
 );
