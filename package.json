@@ -36,6 +36,8 @@
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^2.0.0",
     "merge-stream": "^1.0.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2",
     "rimraf": "^2.5.4",
     "tape": "^4.6.2",
     "vinyl-buffer": "^1.0.0",
