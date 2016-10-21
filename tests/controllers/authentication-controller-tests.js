@@ -38,10 +38,43 @@ tests.testMethod('login', function (t) {
     st.end();
   }));
 
+  t.test('It should return 400 for undefined password', catchHandler(async function (st, authController) {
+    authController.authenticator.login = async () => st.fail('Authenticator.login should not have been called');
+
+    var result = await authController.login('bob', undefined);
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 400 for invalid username', catchHandler(async function (st, authController) {
+    authController.authenticator.login = async () => st.fail('Authenticator.login should not have been called');
+
+    var result = await authController.login('bob', 'a'.repeat(2048));
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
   t.test('It should return 401 for invalid user login', catchHandler(async function (st, authController) {
     var result = await authController.login('bob', 'pass1234');
     st.equals(result.changes.status, 401);
     st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 200 and the tokens for correct login', catchHandler(async function (st, authController) {
+    authController.authenticator.loginResult = {
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken'
+    };
+
+    var result = await authController.login('bob', 'pass1234');
+    st.equals(result.changes.status, 200);
+    st.deepEquals(result.changes.data, {
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken'
+    });
     st.end();
   }));
 });
