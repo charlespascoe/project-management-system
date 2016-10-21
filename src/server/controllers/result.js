@@ -55,6 +55,7 @@ export default class Result {
 
   data(data) {
     this.changes.data = data;
+    this.changes.status = this.changes.status || 200;
 
     this.actions.push((res, next) => {
       res.json(data);
