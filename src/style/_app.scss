@@ -1,0 +1,28 @@
+// Globals
+body {
+  position: absolute;
+  width: 100%;
+  min-height: 100%;
+}
+
+footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+}
+
+.alert {
+  .glyphicon {
+    padding: 0;
+    float: left;
+  }
+
+  div {
+    margin-left: 20px;
+  }
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+.glyphicon.rotating {
+  animation: spin 2s linear infinite;
+}
