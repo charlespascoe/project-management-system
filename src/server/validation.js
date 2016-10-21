@@ -163,4 +163,4 @@ export function validation(logger) {
   return validation;
 };
 
-export default validation(loggers.main).check;
+export default validation().check;
