@@ -5,13 +5,15 @@ export class SchemaProperty {
     var {
       column = propName,
       id = false,
-      readonly = false
+      readonly = false,
+      validate = () => true
     } = config;
 
     Utils.readonlyProperty(this, 'propName', propName);
     Utils.readonlyProperty(this, 'column', column);
     Utils.readonlyProperty(this, 'readonly', readonly);
     Utils.readonlyProperty(this, 'id', id);
+    Utils.readonlyProperty(this, 'validate', validate);
   }
 }
 

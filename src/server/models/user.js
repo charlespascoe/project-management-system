@@ -1,5 +1,6 @@
 import Model from 'server/models/model';
 import Schema from 'server/models/schema';
+import validate from 'server/validation';
 
 export default class User extends Model {
   constructor(database, data) {
@@ -21,7 +22,8 @@ User.schema = new Schema({
     readonly: true
   },
   email: {
-    column: 'email'
+    column: 'email',
+    validate: (email) => validate(email).isString().minLength(1).maxLength(128).isValid()
   },
   firstName: {
     column: 'first_name'
