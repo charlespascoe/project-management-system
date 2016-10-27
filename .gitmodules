@@ -1,0 +1,3 @@
+[submodule "client"]
+	path = client
+	url = git@github.com:cpascoe95/project-management-system-client
