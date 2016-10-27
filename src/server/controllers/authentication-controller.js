@@ -3,6 +3,7 @@ import loggers from 'server/loggers';
 import Result from 'server/controllers/result';
 import validate from 'server/validation';
 import User from 'server/models/user';
+import moment from 'moment';
 
 export class AuthenticationController {
   constructor(authenticator, loggers) {
@@ -15,7 +16,7 @@ export class AuthenticationController {
 
     if (!User.schema.email.validate(username) ||
         !validate(password).isString().minLength(1).maxLength(1024).isValid()) {
-      this.loggers.security.warn('Invalid login request');
+      this.loggers.security.warn('Invalid login attempt');
       return result.delay().status(400);
     }
 
@@ -30,6 +31,25 @@ export class AuthenticationController {
       accessToken: authTokenPair.accessToken,
       refreshToken: authTokenPair.refreshToken
     });
+  }
+
+  async verifyAccessToken(ipAddress, accessToken) {
+    var result = new Result();
+
+    var user = await this.authenticator.getUserForAccessToken(accessToken);
+
+    if (user == null) {
+      this.loggers.security.warn({ip: ipAddress}, 'Request made using invalid access token');
+      return result.delay().status(401);
+    }
+
+    if (moment().isAfter(user.requestToken.accessTokenExpires)) {
+      // Access token correct, but has expired - expected, so log only to debug
+      this.loggers.security.debug({ip: ipAddress, user: user}, 'Access Token Expired');
+      return result.delay().status(401);
+    }
+
+    return null;
   }
 }
 

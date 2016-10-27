@@ -13,7 +13,8 @@ const tests = new TestFrame('AuthenticationController');
 tests.createInstance = function () {
   var authenticator = {
     loginResult: null,
-    login: async () => authenticator.loginResult
+    login: async () => authenticator.loginResult,
+    getUserForAccessToken: async () => null
   };
 
   return new AuthenticationController(authenticator, dummyLoggers);
@@ -75,6 +76,15 @@ tests.testMethod('login', function (t) {
       accessToken: 'accessToken',
       refreshToken: 'refreshToken'
     });
+    st.end();
+  }));
+});
+
+tests.testMethod('verifyAccessToken', function (t) {
+  t.test('It should return 401 for invalid token', catchHandler(async function (st, authController) {
+    var result = await authController.verifyAccessToken('127.0.0.1', '**&^7643hjgsdf');
+    st.equals(result.changes.status, 401);
+    st.ok(result.changes.delay > 0);
     st.end();
   }));
 });
