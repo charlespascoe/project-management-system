@@ -44,19 +44,8 @@ gulp.task('build', ['babel'], function () {
       .pipe(gulp.dest(outputDir + '/public/')),
     gulp.src('./src/emails/**/*.*')
       .pipe(gulp.dest(outputDir + '/emails/')),
-    gulp.src('./src/style/**/*.scss')
-      .pipe(gulpif(!prod, sourcemaps.init()))
-      .pipe(scss({outputStyle: 'compressed'}).on('error', scss.logError))
-      .pipe(autoprefixer())
-      .pipe(gulpif(!prod, sourcemaps.write('.')))
-      .pipe(gulp.dest(outputDir + '/public/css/')),
-    browserify({entries: './src/client/app.js', debug: !prod, paths: ['./node_modules', './src/']})
-      .transform(babelify, {presets: ['react', 'es2015'], plugins: ['transform-async-to-generator'], sourceMaps: !prod})
-      .bundle()
-      .pipe(source('app.js'))
-      .pipe(buffer())
-      .pipe(gulpif(prod, uglify()))
-      .pipe(gulp.dest(outputDir + '/public/js/'))
+    gulp.src('./client/.compiled-client/public/**/*')
+      .pipe(gulp.dest(outputDir + '/public/'))
   );
 
   return mergeStrm;
