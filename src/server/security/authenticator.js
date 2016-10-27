@@ -54,6 +54,26 @@ export class Authenticator {
     };
   }
 
+  async getUserForAccessToken(accessToken) {
+    var parsedToken = this.parseBase64Token(accessToken);
+
+    if (parsedToken == null) return null;
+
+    var user = await this.users.getUserById(parsedToken.userId);
+
+    if (user == null) return null;
+
+    var accessTokenHash = CryptoUtils.hash(parsedToken.token).toString('hex');
+
+    var authTokenPair = user.authTokens.find(atp => atp.accessTokenHash == accessTokenHash);
+
+    if (authTokenPair == null) return null;
+
+    user.requestToken = authTokenPair;
+
+    return user;
+  }
+
   parseBase64Token(b64Token) {
     if (!this.validate(b64Token).isString().isBase64().isValid()) return null;
 

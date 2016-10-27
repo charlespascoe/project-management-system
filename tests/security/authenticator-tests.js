@@ -1,4 +1,5 @@
 import catchAsync from 'server/catch-async';
+import CryptoUtils from 'server/crypto-utils';
 import TestFrame from 'tests/test-frame';
 import { Authenticator } from 'server/security/authenticator';
 import { validation } from 'server/validation';
@@ -15,12 +16,19 @@ tests.createInstance = function () {
   var dummyUser = {
     id: 123,
     email: 'bob@gmail.com',
-    passHash: '<hash>'
+    passHash: '<hash>',
+    authTokens: [
+      {
+        accessTokenHash: CryptoUtils.hash(Buffer.from('abcd', 'hex')).toString('hex')
+      }
+    ]
   };
 
   var users = {
+    dummyUser: dummyUser,
     getUserByEmailResult: dummyUser,
-    getUserByEmail: async () => users.getUserByEmailResult
+    getUserByEmail: async () => users.getUserByEmailResult,
+    getUserById: async (id) => id == dummyUser.id ? dummyUser : null
   };
 
   var authTokens = {
@@ -84,6 +92,41 @@ tests.testMethod('generateAuthenticationTokenPair', function (t) {
     st.end();
   }));
 });
+
+tests.testSet('Authenticator.getUserForAccessToken', [
+  {
+    name: 'It should return null on non-base64 input',
+    args: ['**&*&*&@@~///'],
+    expected: false
+  },
+  {
+    name: 'It should return null for non-existant user',
+    args: [Buffer.from('9:abcd').toString('base64')],
+    expected: false
+  },
+  {
+    name: 'It should return null for non-existant access token',
+    args: [Buffer.from('123:0000').toString('base64')],
+    expected: false
+  },
+  {
+    name: 'It should return the user for the correct token',
+    args: [Buffer.from('123:abcd').toString('base64')],
+    expected: true
+  }
+], catchHandler(async function (st, args, expected, authenticator) {
+  var result = await authenticator.getUserForAccessToken(...args);
+
+  if (expected) {
+    st.deepEquals(result, authenticator.users.dummyUser);
+  } else {
+    st.equals(result, null);
+  }
+
+  st.end();
+}));
+
+
 
 tests.testSet('Authenticator.parseBase64Token', [
   {
