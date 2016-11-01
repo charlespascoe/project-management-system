@@ -29,4 +29,7 @@ docker: build-production
 	docker build --build-arg VERSION=$(VERSION) -t '$(DOCKER_REPO):$(TAG)' .
 	rm -rf docker-build/
 
-
+export-docker:
+	@FILENAME=$$(echo '$(REPO)-$(TAG)' | sed -e 's/\./-/g' -e 's/[^a-zA-Z0-9_-]//g'); \
+	echo "Exporting $(REPO):$(TAG) to $$FILENAME.tar.gz, please wait..."; \
+	docker save '$(REPO):$(TAG)' | gzip > "$$FILENAME.tar.gz"
