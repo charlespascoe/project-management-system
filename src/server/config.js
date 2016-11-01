@@ -12,6 +12,8 @@ try {
   configuration = {};
 }
 
+configuration.appName = process.env['APP_NAME'] || configuration.appName || 'proj-mgr-sys';
+
 // Database
 if (!configuration.db) {
   configuration.db = {
