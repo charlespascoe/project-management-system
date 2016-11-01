@@ -4,7 +4,16 @@ import config from 'server/config';
 import Utils from 'server/utils';
 
 var commonConfig = {
-  serializers: { err: bunyan.stdSerializers.err },
+  serializers: {
+    err: bunyan.stdSerializers.err,
+    user: (user) => {
+      if (!user) return null;
+      return {
+        id: user.id,
+        tokId: user.requestToken && user.requestToken.id
+      };
+    }
+  },
   level: config.logging.level || bunyan.INFO,
   src: config.logging.src
 };
