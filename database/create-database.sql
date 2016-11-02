@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.12.3
+# Version: 0.13.0
 # Last Modified: 22/04/2016
 
 # Drop the existing database (this is a create script, not an update script!)
@@ -118,31 +118,18 @@ CREATE TABLE `task` (
     `completed` timestamp NULL DEFAULT NULL,
     `priority` tinyint(1) NOT NULL DEFAULT 4,
     `est_effort` int(6) NOT NULL DEFAULT 0,
+    `assigned_user_id` int(11) NOT NULL,
 
     PRIMARY KEY (`project_id`, `task_id`),
 
     CONSTRAINT `task_project_fk`
         FOREIGN KEY (`project_id`)
         REFERENCES `project` (`project_id`)
-        ON DELETE CASCADE
-);
-
-CREATE TABLE `task_assignment` (
-    `user_id` int(11) NOT NULL,
-    `project_id` int(11) NOT NULL,
-    `task_id` int(11) NOT NULL,
-
-    PRIMARY KEY (`user_id`, `project_id`, `task_id`),
-
-    CONSTRAINT `task_assignment_user_fk`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `user` (`user_id`)
         ON DELETE CASCADE,
 
-    CONSTRAINT `task_assignment_task_fk`
-        FOREIGN KEY (`project_id`, `task_id`)
-        REFERENCES `task` (`project_id`, `task_id`)
-        ON DELETE CASCADE
+    CONSTRAINT `task_user_fk`
+        FOREIGN KEY (`assigned_user_id`)
+        REFERENCES `user` (`user_id`)
 );
 
 CREATE TABLE `log` (
@@ -164,7 +151,6 @@ CREATE TABLE `log` (
     CONSTRAINT `log_user_fk`
         FOREIGN KEY (`log_user_id`)
         REFERENCES `user` (`user_id`)
-        ON DELETE CASCADE
 );
 
 # Functions
@@ -201,26 +187,6 @@ BEGIN
     END IF;
 
     RETURN @next_id;
-END;;
-
-CREATE FUNCTION ASSIGNED_USERS(proj_id int(11), tsk_id int(11)) RETURNS mediumtext
-BEGIN
-    SET @users = "";
-
-    SELECT
-        GROUP_CONCAT(CONCAT_WS(' ', `user`.`first_name`, `user`.`other_names`) SEPARATOR ', ')
-        FROM `task_assignment`
-        INNER JOIN `user`
-            ON `task_assignment`.`user_id` = `user`.`user_id`
-        WHERE `task_assignment`.`task_id` = tsk_id
-            AND `task_assignment`.`project_id` = proj_id
-        GROUP BY `task_assignment`.`task_id` AND `task_assignment`.`project_id` INTO @users;
-
-    IF (@users IS NULL) THEN
-        SET @users = "";
-    END IF;
-
-    RETURN @users;
 END;;
 
 CREATE FUNCTION REMAINING_EFFORT(proj_id int(11), tsk_id int(11)) RETURNS int(11)
