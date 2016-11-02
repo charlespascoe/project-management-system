@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.12.1
+# Version: 0.12.2
 # Last Modified: 22/04/2016
 
 # Drop the existing database (this is a create script, not an update script!)
@@ -30,7 +30,7 @@ CREATE TABLE `user` (
     PRIMARY KEY (`user_id`)
 );
 
-CREATE TABLE `authentication_token` (
+CREATE TABLE `authentication_token_pair` (
     `token_id` int(11) NOT NULL AUTO_INCREMENT,
     `user_id` int(11) NOT NULL,
     `access_token_hash` varchar(128) NOT NULL,
