@@ -3,7 +3,7 @@ import Schema from 'server/models/schema';
 
 export default class AuthenticationTokenPair extends Model {
   constructor(database, data) {
-    super(database, 'authentication_token', data, AuthenticationToken.schema);
+    super(database, 'authentication_token_pair', data, AuthenticationToken.schema);
   }
 }
 
