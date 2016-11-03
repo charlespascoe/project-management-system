@@ -40,7 +40,7 @@ export class Authenticator {
       refreshExpires = new Date(Date.now() + refreshExpiry);
     }
 
-    await this.authTokens.addToken({
+    var authTokenPairId = await this.authTokens.addTokenPair({
       userId: user.id,
       accessTokenHash: CryptoUtils.hash(accessToken).toString('hex'),
       accessTokenExpires: accessExpires,
@@ -49,6 +49,33 @@ export class Authenticator {
     });
 
     return {
+      id: authTokenPairId,
+      accessToken: Buffer.from(`${user.id}:${accessToken.toString('hex')}`).toString('base64'),
+      refreshToken: Buffer.from(`${user.id}:${refreshToken.toString('hex')}`).toString('base64')
+    };
+  }
+
+  async refreshTokenPair(user, authTokenPair, accessExpires = null, refreshExpires = null) {
+    var accessToken = await CryptoUtils.randomBytes(keyLength),
+        refreshToken = await CryptoUtils.randomBytes(keyLength);
+
+    if (accessExpires == null) {
+      accessExpires = new Date(Date.now() + accessExpiry);
+    }
+
+    if (refreshExpires == null) {
+      refreshExpires = new Date(Date.now() + refreshExpiry);
+    }
+
+    authTokenPair.accessTokenHash = CryptoUtils.hash(accessToken).toString('hex');
+    authTokenPair.accessTokenExpires = accessExpires;
+    authTokenPair.refreshTokenHash = CryptoUtils.hash(refreshToken).toString('hex');
+    authTokenPair.refreshTokenExpires = refreshExpires;
+
+    await authTokenPair.save();
+
+    return {
+      id: authTokenPair.id,
       accessToken: Buffer.from(`${user.id}:${accessToken.toString('hex')}`).toString('base64'),
       refreshToken: Buffer.from(`${user.id}:${refreshToken.toString('hex')}`).toString('base64')
     };
@@ -66,6 +93,26 @@ export class Authenticator {
     var accessTokenHash = CryptoUtils.hash(parsedToken.token).toString('hex');
 
     var authTokenPair = user.authTokens.find(atp => atp.accessTokenHash == accessTokenHash);
+
+    if (authTokenPair == null) return null;
+
+    user.requestToken = authTokenPair;
+
+    return user;
+  }
+
+  async getUserForRefreshToken(refreshToken) {
+    var parsedToken = this.parseBase64Token(refreshToken);
+
+    if (parsedToken == null) return null;
+
+    var user = await this.users.getUserById(parsedToken.userId);
+
+    if (user == null) return null;
+
+    var refreshTokenHash = CryptoUtils.hash(parsedToken.token).toString('hex');
+
+    var authTokenPair = user.authTokens.find(atp => atp.refreshTokenHash == refreshTokenHash);
 
     if (authTokenPair == null) return null;
 
