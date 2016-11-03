@@ -7,7 +7,7 @@ import bodyParser from 'body-parser';
 import Result from 'server/controllers/result';
 import config from 'server/config';
 import routers from 'server/routers';
-import authenticate from 'server/controllers/authenticate';
+import authenticate from 'server/middleware/authenticate';
 
 const app = express();
 const port = 8080;
