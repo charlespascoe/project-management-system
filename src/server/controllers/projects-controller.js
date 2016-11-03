@@ -2,6 +2,7 @@ import loggers from 'server/loggers';
 import validate from 'server/validation';
 import projects from 'server/database/projects';
 import Project from 'server/models/project';
+import httpStatuses from 'http-status-codes';
 
 export class ProjectsController {
   constructor(loggers, projects) {
@@ -18,17 +19,17 @@ export class ProjectsController {
     if (!Project.schema.name.validate(data.name) ||
         !Project.schema.id.validate(data.id)) {
       this.loggers.main.warn({user: user, loc: 'ProjectsController.createProject'}, 'Invalid data');
-      return result.delay().status(400);
+      return result.delay().status(httpStatuses.BAD_REQUEST);
     }
 
-    var projectId = await this.projects.addProject({
+    var idExists = await this.projects.createProject({
       id: data.id,
       name: data.name
     });
 
-    return result.data({
-      id: projectId
-    });
+    if (idExists) return result.status(httpStatuses.CONFLICT)
+
+    return result.status(httpStatuses.CREATED);
   }
 
 }
