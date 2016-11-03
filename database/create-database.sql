@@ -48,7 +48,7 @@ CREATE TABLE `authentication_token_pair` (
 );
 
 CREATE TABLE `project` (
-    `project_id` int(11) NOT NULL AUTO_INCREMENT,
+    `project_id` varchar(16) NOT NULL UNIQUE,
     `project_name` varchar(64) NOT NULL UNIQUE,
     `completed` bool NOT NULL DEFAULT FALSE,
 
@@ -87,7 +87,7 @@ CREATE TABLE `role_permission` (
 
 CREATE TABLE `project_assignment` (
     `user_id` int(11) NOT NULL,
-    `project_id` int (11) NOT NULL,
+    `project_id` varchar(16) NOT NULL,
     `role_id` int(11) NOT NULL,
 
     PRIMARY KEY (`user_id`, `project_id`),
@@ -108,7 +108,7 @@ CREATE TABLE `project_assignment` (
 );
 
 CREATE TABLE `task` (
-    `project_id` int(11) NOT NULL,
+    `project_id` varchar(16) NOT NULL,
     `task_id` int(11) NOT NULL,
     `task_summary` varchar(256) NOT NULL,
     `task_desc` mediumtext NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE `task` (
 );
 
 CREATE TABLE `log` (
-    `project_id` int(11) NOT NULL,
+    `project_id` varchar(16) NOT NULL,
     `task_id` int(11) NOT NULL,
     `log_id` int(11) NOT NULL,
     `log_user_id` int(11) NOT NULL,
@@ -157,7 +157,7 @@ CREATE TABLE `log` (
 
 DELIMITER ;;
 
-CREATE FUNCTION NEXT_TASK_ID(proj_id int(11)) RETURNS int(11)
+CREATE FUNCTION NEXT_TASK_ID(proj_id varchar(16)) RETURNS int(11)
 BEGIN
     SET @next_id = NULL;
 
@@ -173,7 +173,7 @@ BEGIN
     RETURN @next_id;
 END;;
 
-CREATE FUNCTION NEXT_LOG_ID(proj_id int(11), tsk_id int(11)) RETURNS int(11)
+CREATE FUNCTION NEXT_LOG_ID(proj_id varchar(16), tsk_id int(11)) RETURNS int(11)
 BEGIN
     SET @next_id = NULL;
 
@@ -189,7 +189,7 @@ BEGIN
     RETURN @next_id;
 END;;
 
-CREATE FUNCTION REMAINING_EFFORT(proj_id int(11), tsk_id int(11)) RETURNS int(11)
+CREATE FUNCTION REMAINING_EFFORT(proj_id varchar(11), tsk_id int(11)) RETURNS int(11)
 BEGIN
     SET @result = NULL;
 
