@@ -3,10 +3,11 @@ import Schema from 'server/models/schema';
 import validate from 'server/validation';
 
 export default class User extends Model {
-  constructor(database, data) {
+  constructor(database, data, authTokens, projectAssignments) {
     super(database, 'user', data, User.schema);
 
-    this.authTokens = data.authTokens;
+    this.authTokens = authTokens;
+    this.projectAssignments = projectAssignments;
   }
 
   async delete() {
