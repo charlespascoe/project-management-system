@@ -11,41 +11,95 @@ export class AuthenticationController {
     this.loggers = loggers;
   }
 
-  async login(result, username, password) {
+  async getAuthToken(result, ipAddress, authenticationData) {
+    if (validate(authenticationData).isString().matches(/^Basic [^\s]+/).isValid()) {
+      var cred = this.parseBasicAuth(authenticationData.split(' ')[1]);
+
+      if (cred == null) return result.delay().status(400);
+
+      // login method will validate username and password
+      return await this.login(result, ipAddress, cred.username, cred.password);
+    }
+
+    if (validate(authenticationData).isString().matches(/^Bearer [^\s]+/).isValid()) {
+      return this.refreshTokenPair(result, ipAddress, authenticationData.split(' ')[1]);
+    }
+  }
+
+  parseBasicAuth(basicAuthString) {
+    if (!validate(basicAuthString).isBase64().isValid()) return null;
+
+    var userPass = Buffer.from(basicAuthString, 'base64').toString('utf8'),
+        colonIndex = userPass.indexOf(':');
+
+    if (colonIndex < 0) return null;
+
+    return {
+      username: userPass.substring(0, colonIndex),
+      password: userPass.substring(colonIndex + 1)
+    };
+  }
+
+  async login(result, ipAddress, username, password) {
     if (!User.schema.email.validate(username) ||
         !validate(password).isString().minLength(1).maxLength(1024).isValid()) {
-      this.loggers.security.warn('Invalid login attempt');
+      this.loggers.security.warn({ip: ipAddress}, 'Invalid login attempt');
+      this.loggers.security.debug({username: username, password: password});
       return result.delay().status(400);
     }
 
     var authTokenPair = await this.authenticator.login(username, password);
 
     if (authTokenPair == null) {
-      this.loggers.security.warn(`Failed login attempt for ${username}`);
+      this.loggers.security.warn({ip: ipAddress}, `Failed login attempt for ${username}`);
       return result.delay().status(401);
     }
 
     return result.data({
+      id: authTokenPair.id,
       accessToken: authTokenPair.accessToken,
       refreshToken: authTokenPair.refreshToken
     });
   }
 
-  async verifyAccessToken(result, ipAddress, accessToken) {
+  async verifyAccessToken(ipAddress, accessToken) {
     var user = await this.authenticator.getUserForAccessToken(accessToken);
 
     if (user == null) {
       this.loggers.security.warn({ip: ipAddress}, 'Request made using invalid access token');
-      return result.delay().status(401);
+      return null;
     }
 
     if (moment().isAfter(user.requestToken.accessTokenExpires)) {
       // Access token correct, but has expired - expected, so log only to debug
       this.loggers.security.debug({ip: ipAddress, user: user}, 'Access Token Expired');
+      return null;
+    }
+
+    return user;
+  }
+
+  async refreshTokenPair(result, ipAddress, refreshToken) {
+    var user = await this.authenticator.getUserForRefreshToken(refreshToken);
+
+    if (user == null) {
+      this.loggers.security.warn({ip: ipAddress}, 'Refresh request made using invalid refresh token');
       return result.delay().status(401);
     }
 
-    return null;
+    if (moment().isAfter(user.requestToken.refreshTokenExpires)) {
+      // Refresh token correct, but has expired - expected, so log only to debug
+      this.loggers.security.debug({ip: ipAddress, user: user}, 'Refresh Token Expired');
+      return result.delay().status(401);
+    }
+
+    var authTokenPair = await this.authenticator.refreshTokenPair(user, user.requestToken);
+
+    return result.data({
+      id: authTokenPair.id,
+      accessToken: authTokenPair.accessToken,
+      refreshToken: authTokenPair.refreshToken
+    });
   }
 }
 
