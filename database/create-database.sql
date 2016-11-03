@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.13.0
+# Version: 0.14.0
 # Last Modified: 22/04/2016
 
 # Drop the existing database (this is a create script, not an update script!)
@@ -49,7 +49,7 @@ CREATE TABLE `authentication_token_pair` (
 
 CREATE TABLE `project` (
     `project_id` varchar(16) NOT NULL UNIQUE,
-    `project_name` varchar(64) NOT NULL UNIQUE,
+    `project_name` varchar(64) NOT NULL,
     `completed` bool NOT NULL DEFAULT FALSE,
 
     PRIMARY KEY (`project_id`)
