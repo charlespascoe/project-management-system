@@ -20,17 +20,6 @@ export class Roles {
     var permissions = results[1]
       .map(row => new Permission(this.database, row));
 
-    return new Role(this.database, results[0][0]);
-  }
-
-  async getUserRoleInProject(projectId, userId) {
-    var query =
-      'SELECT `role_id` FROM `project_assignment` WHERE `project_id` = :project_id AND `user_id` = :user_id';
-
-    var result = await this.database.queryForOne(query, {project_id: projectId, user_id: userId});
-
-    if (!result) return null;
-
-    return await this.getRoleById(result.role_id);
+    return new Role(this.database, results[0][0], permissions);
   }
 }
