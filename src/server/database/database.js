@@ -31,8 +31,10 @@ export class Database {
 
       return await this.pool.query(statement, data);
     } catch (e) {
-      this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query');
-      e.logged = true;
+      if (e.code != 'ER_DUP_ENTRY') {
+        this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query');
+        e.logged = true;
+      }
       throw e;
     }
   }

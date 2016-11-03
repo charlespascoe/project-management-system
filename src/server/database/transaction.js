@@ -14,8 +14,10 @@ export default class Transaction {
 
       return await this.conn.query(statement, data);
     } catch (e) {
-      this.transactionLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
-      e.logged = true;
+      if (e.code != 'ER_DUP_ENTRY') {
+        this.transactionLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
+        e.logged = true;
+      }
       throw e;
     }
   }
