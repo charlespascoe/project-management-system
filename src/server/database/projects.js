@@ -28,7 +28,7 @@ export class Projects {
     try {
       var result = await this.database.query(query, columnData);
     } catch (e) {
-      // proejct_id exists, return true
+      // project_id exists, return true
       if (e.code == 'ER_DUP_ENTRY') return true;
       throw e;
     }

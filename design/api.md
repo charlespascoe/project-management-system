@@ -21,7 +21,7 @@ All other requests require a valid access token to succeed
     * Updates certain information about the project (e.g. project name)
   * GET /{project ID}/members
     * Returns a list of all members in a project
-  * POST /{proect ID}/members
+  * POST /{project ID}/members
     * Adds a member to the project
     * The body must include the user ID and the role ID of the role the user has in the project
     * If the user exists in the project, their role will be updated
