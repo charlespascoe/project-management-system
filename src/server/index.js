@@ -6,6 +6,7 @@ import express from 'express';
 import rootRouter from 'server/routers/root';
 import authRouter from 'server/routers/auth-router';
 import bodyParser from 'body-parser';
+import Result from 'server/controllers/result';
 
 const app = express();
 
@@ -15,6 +16,10 @@ app.locals.version = '0.0.0-DEV';
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views/pages');
 
+app.use(function (req, res, next) {
+  res.result = new Result();
+  next();
+});
 app.use('/public', express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use('/', rootRouter);
