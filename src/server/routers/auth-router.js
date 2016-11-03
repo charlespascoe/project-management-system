@@ -11,7 +11,7 @@ const catchHandler = catchAsync(function (err, req, res) {
 var router = new Router();
 
 router.post('/login', catchHandler(async function (req, res) {
-  var result = await authenticationController.login(req.body.username, req.body.password);
+  var result = await authenticationController.login(res.result, req.body.username, req.body.password);
   await result.apply(res);
   res.end();
 }));

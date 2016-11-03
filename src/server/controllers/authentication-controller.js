@@ -11,9 +11,7 @@ export class AuthenticationController {
     this.loggers = loggers;
   }
 
-  async login(username, password) {
-    var result = new Result();
-
+  async login(result, username, password) {
     if (!User.schema.email.validate(username) ||
         !validate(password).isString().minLength(1).maxLength(1024).isValid()) {
       this.loggers.security.warn('Invalid login attempt');
@@ -33,9 +31,7 @@ export class AuthenticationController {
     });
   }
 
-  async verifyAccessToken(ipAddress, accessToken) {
-    var result = new Result();
-
+  async verifyAccessToken(result, ipAddress, accessToken) {
     var user = await this.authenticator.getUserForAccessToken(accessToken);
 
     if (user == null) {
