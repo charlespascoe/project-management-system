@@ -23,7 +23,7 @@ export default class Model {
         throw new Error(`Data element expected: column ${property.column} not found on data for ${this._tableName}`);
       }
 
-      if (property.readonly) {
+      if (property.readonly || property.id) {
         Utils.readonlyProperty(this, property.propName, this._data[property.column]);
         continue;
       }
