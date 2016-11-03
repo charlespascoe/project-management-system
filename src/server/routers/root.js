@@ -1,11 +1,7 @@
 import { Router } from 'express';
 
-export function RootRouter() {
-  var router = new Router();
+var router = new Router();
 
-  router.get('/', (req, res) => res.render('index'));
+router.get('/', (req, res) => res.render('index'));
 
-  return router;
-}
-
-export default RootRouter();
+export default router;
