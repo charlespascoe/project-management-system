@@ -22,6 +22,13 @@ if (config.logging.logOutputDir) {
   commonConfig.streams = [{
     path: path.join(config.logging.logOutputDir, config.appName + '.log')
   }];
+
+  if (!config.production) {
+    commonConfig.streams.push({
+      stream: process.stdout,
+      level: 'TRACE'
+    });
+  }
 }
 
 export default {
