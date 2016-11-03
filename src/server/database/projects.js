@@ -16,7 +16,7 @@ export class Projects {
     return results.map(row => new Project(this.database, row));
   }
 
-  async addProject(data) {
+  async createProject(data) {
     var columnData = Project.schema.mapPropertiesToColumns(data);
     console.log(columnData);
 
@@ -25,9 +25,15 @@ export class Projects {
     var query =
       'INSERT INTO `project` SET ' + SqlUtils.formatData(columnData) + ';';
 
-    var result = await this.database.query(query, columnData);
+    try {
+      var result = await this.database.query(query, columnData);
+    } catch (e) {
+      // proejct_id exists, return true
+      if (e.code == 'ER_DUP_ENTRY') return true;
+      throw e;
+    }
 
-    return result.insertId;
+    return false;
   }
 }
 
