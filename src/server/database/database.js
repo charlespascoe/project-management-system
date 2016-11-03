@@ -41,7 +41,7 @@ export class Database {
     var results = await this.query(statement, data);
     if (!(results instanceof Array)) return results;
     if (results.length < 1) return null;
-    return result[0];
+    return results[0];
   }
 
   async transaction(func) {

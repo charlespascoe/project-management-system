@@ -24,7 +24,7 @@ export class Users {
   async getUserById(userId) {
     var userQuery =
       'SELECT * FROM `user` WHERE `user_id` = :user_id; ' +
-      'SELECT * FROM `authentication_token` WHERE `user_id` = :user_id; ' +
+      'SELECT * FROM `authentication_token_pair` WHERE `user_id` = :user_id; ' +
       'SELECT * FROM `project_assignment` WHERE `user_id` = :user_id;';
 
     var results = await this.database.query(userQuery, {user_id: userId}),

@@ -1,5 +1,6 @@
 import AuthenticationTokenPair from 'server/models/authentication-token-pair';
 import database from 'server/database/database';
+import SqlUtils from 'server/database/sql-utils';
 
 export class AuthenticationTokens {
   constructor(database) {
@@ -8,7 +9,7 @@ export class AuthenticationTokens {
 
   async getAuthTokenPairById(id) {
     var query =
-      'SELECT * FROM `authentication_token` WHERE `token_id` = :token_id;';
+      'SELECT * FROM `authentication_token_pair` WHERE `token_id` = :token_id;';
 
     var result = await this.database.queryForOne(query, {token_id: id});
 
@@ -23,7 +24,7 @@ export class AuthenticationTokens {
     if (columnData == null) throw new Error('Invalid data provided to AuthenticationTokens.addToken');
 
     var query =
-      'INSERT INTO `authentication_token` SET ' + SqlUtils.formatData(columnData) + ';';
+      'INSERT INTO `authentication_token_pair` SET ' + SqlUtils.formatData(columnData) + ';';
 
     var result = await this.database.query(query, columnData);
 
