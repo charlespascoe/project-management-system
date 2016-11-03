@@ -12,7 +12,8 @@ var commonConfig = {
         id: user.id,
         tokId: user.requestToken && user.requestToken.id
       };
-    }
+    },
+    ip: (ip) => ip.match(/^::ffff:/) ? ip.substring(7) : ip
   },
   level: config.logging.level || bunyan.INFO,
   src: config.logging.src
