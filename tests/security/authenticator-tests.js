@@ -2,9 +2,7 @@ import catchAsync from 'server/catch-async';
 import CryptoUtils from 'server/crypto-utils';
 import TestFrame from 'tests/test-frame';
 import { Authenticator } from 'server/security/authenticator';
-import { validation } from 'server/validation';
-
-const validate = validation().check;
+import validate from 'server/validation';
 
 const catchHandler = catchAsync(function (err, st) {
   st.fail('Unexpected exception: ' + err.toString());
@@ -32,7 +30,18 @@ tests.createInstance = function () {
   };
 
   var authTokens = {
-    addToken: async () => 123
+    addTokenPairResult: {
+      accessToken: Buffer.from('abcd', 'hex'),
+      refreshToken: Buffer.from('ef01', 'hex'),
+      serialise: () => {
+        return {
+          id: 123,
+          accessToken: this.accessToken.toString('base64'),
+          refreshToken: this.refreshToken.toString('base64')
+        };
+      }
+    },
+    addTokenPair: async () => authTokens.addTokenPairResult
   };
 
   var passHasher = {
@@ -61,8 +70,8 @@ tests.testMethod('login', function (t) {
 
   t.test('It should return the auth token for the correct password', catchHandler(async function (st, authenticator) {
     var result = await authenticator.login('bob@gmail.com', 'password');
-    st.ok(validate(result.accessToken).isString().isBase64().isValid(), 'accessToken should be Base64');
-    st.ok(validate(result.refreshToken).isString().isBase64().isValid(), 'refreshToken should be Base64');
+    st.ok(Buffer.isBuffer(result.accessToken), 'accessToken should be a Buffer');
+    st.ok(Buffer.isBuffer(result.refreshToken), 'refreshToken should be a Buffer');
     st.end();
   }));
 });
@@ -86,14 +95,14 @@ tests.testMethod('generateAuthenticationTokenPair', function (t) {
 
     var authTokenPair = await authenticator.generateAuthenticationTokenPair(user, accessExpires, refreshExpires);
 
-    st.ok(validate(authTokenPair.accessToken).isString().isBase64().isValid(), 'accessToken should be Base64');
-    st.ok(validate(authTokenPair.refreshToken).isString().isBase64().isValid(), 'refreshToken should be Base64');
+    st.ok(Buffer.isBuffer(authTokenPair.accessToken), 'accessToken should be a Buffer');
+    st.ok(Buffer.isBuffer(authTokenPair.refreshToken), 'refreshToken should be a Buffer');
 
     st.end();
   }));
 });
 
-tests.testSet('Authenticator.getUserForAccessToken', [
+tests.testSet('Authenticator.getUserForToken', [
   {
     name: 'It should return null on non-base64 input',
     args: ['**&*&*&@@~///'],
@@ -115,7 +124,7 @@ tests.testSet('Authenticator.getUserForAccessToken', [
     expected: true
   }
 ], catchHandler(async function (st, args, expected, authenticator) {
-  var result = await authenticator.getUserForAccessToken(...args);
+  var result = await authenticator.getUserForToken(...args, 'access');
 
   if (expected) {
     st.deepEquals(result, authenticator.users.dummyUser);
@@ -128,29 +137,3 @@ tests.testSet('Authenticator.getUserForAccessToken', [
 
 
 
-tests.testSet('Authenticator.parseBase64Token', [
-  {
-    name: 'It should return null on non-base64 input',
-    args: ['**&*&*&@@~///'],
-    expected: null
-  },
-  {
-    name: 'It should return null for invalid user ID',
-    args: [Buffer.from('asdf:00112233').toString('base64')],
-    expected: null
-  },
-  {
-    name: 'It should return null for invalid hex token',
-    args: [Buffer.from('1234:XXXXXXX').toString('base64')],
-    expected: null
-  },
-  {
-    name: 'It should return the expected object for correct input',
-    args: [Buffer.from('1234:aabbccdd').toString('base64')],
-    expected: {userId: 1234, token: Buffer.from('aabbccdd', 'hex')}
-  }
-], function (st, args, expected, authenticator) {
-  var result = authenticator.parseBase64Token(...args);
-  st.deepEquals(result, expected);
-  st.end();
-});

@@ -22,7 +22,7 @@ export class AuthenticationController {
     }
 
     if (validate(authenticationData).isString().matches(/^Bearer [^\s]+/).isValid()) {
-      return this.refreshTokenPair(result, ipAddress, authenticationData.split(' ')[1]);
+      return await this.refreshTokenPair(result, ipAddress, authenticationData.split(' ')[1]);
     }
   }
 
@@ -55,15 +55,11 @@ export class AuthenticationController {
       return result.delay().status(401);
     }
 
-    return result.data({
-      id: authTokenPair.id,
-      accessToken: authTokenPair.accessToken,
-      refreshToken: authTokenPair.refreshToken
-    });
+    return result.data(authTokenPair.serialise());
   }
 
   async verifyAccessToken(ipAddress, accessToken) {
-    var user = await this.authenticator.getUserForAccessToken(accessToken);
+    var user = await this.authenticator.getUserForToken(accessToken, 'access');
 
     if (user == null) {
       this.loggers.security.warn({ip: ipAddress}, 'Request made using invalid access token');
@@ -80,7 +76,7 @@ export class AuthenticationController {
   }
 
   async refreshTokenPair(result, ipAddress, refreshToken) {
-    var user = await this.authenticator.getUserForRefreshToken(refreshToken);
+    var user = await this.authenticator.getUserForToken(refreshToken, 'refresh');
 
     if (user == null) {
       this.loggers.security.warn({ip: ipAddress}, 'Refresh request made using invalid refresh token');
@@ -95,11 +91,7 @@ export class AuthenticationController {
 
     var authTokenPair = await this.authenticator.refreshTokenPair(user, user.requestToken);
 
-    return result.data({
-      id: authTokenPair.id,
-      accessToken: authTokenPair.accessToken,
-      refreshToken: authTokenPair.refreshToken
-    });
+    return result.data(authTokenPair.serialise());
   }
 }
 

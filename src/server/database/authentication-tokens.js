@@ -28,7 +28,9 @@ export class AuthenticationTokens {
 
     var result = await this.database.query(query, columnData);
 
-    return result.insertId;
+    columnData.token_id = result.insertId;
+
+    return new AuthenticationTokenPair(this.database, columnData);
   }
 }
 
