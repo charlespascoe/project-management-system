@@ -1,8 +1,9 @@
 import Cookie from 'server/controllers/cookie';
 
 export default class Result {
-  constructor(statusCode = 200) {
-    this.statusCode = statusCode;
+  constructor(response) {
+    this.res = response;
+    this.statusCode = 200;
     this.actions = [];
     this.cookies = [];
     this.clearCookes = [];
@@ -117,6 +118,12 @@ export default class Result {
 
       next();
     }.bind(this));
+  }
+
+  async end(res = this.res) {
+    if (res == null) throw new Error('res can\'t be null');
+    await this.apply(res);
+    res.end();
   }
 }
 
