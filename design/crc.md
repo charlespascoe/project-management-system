@@ -123,6 +123,23 @@ Users
   * User
   * AuthenticationToken
 
+AuthenticationTokens
+--------------------
+* Does
+  * Adds an authentication token pair to the database
+* Collaborators
+  * Database
+  * AuthenticationTokenPair
+
+Projects
+--------
+* Does
+  * Gets all projects in the database
+  * Adds a projects to the database
+* Collaborators
+  * Database
+  * Project
+
 Security Classes
 ================
 
@@ -136,6 +153,8 @@ Authenticator
 -------------
 * Does
   * Authenticates user login requests
+  * Authenticates refresh requests
+  * Generates authentication token pairs
 * Collaborators
   * User
   * PasswordHasher
@@ -144,4 +163,57 @@ Authorisor
 ----------
 * Does
   * Verifies that a user has the correct permission for a particular action
+* Collaborators
+  * User
+  * Role
+  * Permission
+
+Controller Classes
+==================
+
+AuthenticationController
+------------------------
+* Does
+  * Handles requests to create a new authentication token pair
+  * Handles requests to delete an authentication token pair
+* Collaborators
+  * User
+  * AuthenticationTokenPair
+  * Authenticator
+
+UsersController
+---------------
+* Does
+  * Handles requests to add a user
+  * Handles requests to get all users
+  * Handles requests to get a specific user's details
+  * Handles requests to edit a user's details
+  * Handles requests to delete a user
+* Collaborators
+  * Authorisor
+
+ProjectsController
+------------------
+* Does
+  * Handles requests to create a new project
+  * Handles requests to get all projects
+  * Handles requests to edit a project's details
+* Collaborators
+  * Authorisor
+
+TasksController
+---------------
+* Does
+  * Handles requests to create a new task to a project
+  * Handles requests to get all tasks within a project
+  * Handles requests to edit a task
+* Collaborators
+  * Authorisor
+
+WorkLogController
+-----------------
+* Does
+  * Handles requests to create a new log entry for a task
+  * Handles requests to get all work log entries for a task
+  * Handles deleting log entries
 
