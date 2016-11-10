@@ -1,4 +1,5 @@
 import authenticationController from 'server/controllers/authentication-controller';
+import authenticate from 'server/middleware/authenticate';
 import loggers from 'server/loggers';
 import catchAsync from 'server/catch-async';
 import { Router } from 'express';
@@ -17,9 +18,9 @@ router.get('/auth-token', catchHandler(async function (req, res) {
   await result.end();
 }));
 
-router.delete('/auth-token/:tokenId?', catchHandler(async function (req, res) {
-  var result = await authenticationController.deleteTokenPair(req.params.tokenId);
-  await result.end();
+router.delete('/auth-token/:tokenId?', authenticate, catchHandler(async function (req, res) {
+  await authenticationController.deleteTokenPair(res.result, req.user, req.params.tokenId);
+  await res.result.end();
 }));
 
 export default router;
