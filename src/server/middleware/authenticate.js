@@ -21,7 +21,10 @@ export default catchHandler(async function authenticate(req, res, next) {
 
   var user = await authenticationController.verifyAccessToken(res.result, req.ip, accessToken);
 
-  if (user == null) return;
+  if (user == null) {
+    await res.result.end();
+    return;
+  }
 
   req.user = user;
 
