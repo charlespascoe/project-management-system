@@ -12,18 +12,18 @@ export class AuthenticationController {
     this.loggers = loggers;
   }
 
-  async getAuthToken(result, ipAddress, authenticationData) {
+  async getAuthToken(result, ipAddress, authenticationData, longExpiry) {
     if (validate(authenticationData).isString().matches(/^Basic [^\s]+/).isValid()) {
       var cred = this.parseBasicAuth(authenticationData.split(' ')[1]);
 
       if (cred == null) return result.delay().status(400);
 
       // login method will validate username and password
-      return await this.login(result, ipAddress, cred.username, cred.password);
+      return await this.login(result, ipAddress, cred.username, cred.password, longExpiry);
     }
 
     if (validate(authenticationData).isString().matches(/^Bearer [^\s]+/).isValid()) {
-      return await this.refreshTokenPair(result, ipAddress, authenticationData.split(' ')[1]);
+      return await this.refreshTokenPair(result, ipAddress, authenticationData.split(' ')[1], longExpiry);
     }
   }
 
@@ -41,7 +41,7 @@ export class AuthenticationController {
     };
   }
 
-  async login(result, ipAddress, username, password) {
+  async login(result, ipAddress, username, password, longExpiry) {
     if (!User.schema.email.validate(username) ||
         !validate(password).isString().minLength(1).maxLength(1024).isValid()) {
       this.loggers.security.warn({ip: ipAddress}, 'Invalid login attempt');
@@ -49,7 +49,7 @@ export class AuthenticationController {
       return result.delay().status(400);
     }
 
-    var authTokenPair = await this.authenticator.login(username, password);
+    var authTokenPair = await this.authenticator.login(username, password, longExpiry);
 
     if (authTokenPair == null) {
       this.loggers.security.warn({ip: ipAddress}, `Failed login attempt for ${username}`);
@@ -79,7 +79,7 @@ export class AuthenticationController {
     return user;
   }
 
-  async refreshTokenPair(result, ipAddress, refreshToken) {
+  async refreshTokenPair(result, ipAddress, refreshToken, longExpiry) {
     var user = await this.authenticator.getUserForToken(refreshToken, 'refresh');
 
     if (user == null) {
@@ -93,7 +93,7 @@ export class AuthenticationController {
       return result.delay().status(401);
     }
 
-    var authTokenPair = await this.authenticator.refreshTokenPair(user, user.requestToken);
+    var authTokenPair = await this.authenticator.refreshTokenPair(user, user.requestToken, longExpiry);
 
     return result.data(authTokenPair.serialise());
   }

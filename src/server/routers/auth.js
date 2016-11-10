@@ -14,8 +14,8 @@ var router = new Router();
 router.get('/auth-token', catchHandler(async function (req, res) {
   // Technically it's the authentication header, but hey...
   var authHeader = req.headers.authorization;
-  var result = await authenticationController.getAuthToken(res.result, req.ip, authHeader);
-  await result.end();
+  await authenticationController.getAuthToken(res.result, req.ip, authHeader, req.query['long-expiry'] == 'true');
+  await res.result.end();
 }));
 
 router.delete('/auth-token/:tokenId?', authenticate, catchHandler(async function (req, res) {
