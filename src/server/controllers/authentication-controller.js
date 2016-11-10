@@ -4,6 +4,7 @@ import Result from 'server/controllers/result';
 import validate from 'server/validation';
 import User from 'server/models/user';
 import moment from 'moment';
+import httpStatuses from 'http-status-codes';
 
 export class AuthenticationController {
   constructor(authenticator, loggers) {
@@ -58,17 +59,20 @@ export class AuthenticationController {
     return result.data(authTokenPair.serialise());
   }
 
-  async verifyAccessToken(ipAddress, accessToken) {
+  async verifyAccessToken(result, ipAddress, accessToken) {
     var user = await this.authenticator.getUserForToken(accessToken, 'access');
 
     if (user == null) {
       this.loggers.security.warn({ip: ipAddress}, 'Request made using invalid access token');
+      result.delay().status(httpStatuses.UNAUTHORIZED);
       return null;
     }
 
-    if (moment().isAfter(user.requestToken.accessTokenExpires)) {
+    if (!user.requestToken.accessTokenExpires || moment().isAfter(user.requestToken.accessTokenExpires)) {
       // Access token correct, but has expired - expected, so log only to debug
       this.loggers.security.debug({ip: ipAddress, user: user}, 'Access Token Expired');
+      // Don't delay, because the client needs to send refresh, and the total refresh time should be kept to a minimum
+      result.status(httpStatuses.UNAUTHORIZED);
       return null;
     }
 
@@ -83,7 +87,7 @@ export class AuthenticationController {
       return result.delay().status(401);
     }
 
-    if (moment().isAfter(user.requestToken.refreshTokenExpires)) {
+    if (!user.requestToken.refreshTokenExpires || moment().isAfter(user.requestToken.refreshTokenExpires)) {
       // Refresh token correct, but has expired - expected, so log only to debug
       this.loggers.security.debug({ip: ipAddress, user: user}, 'Refresh Token Expired');
       return result.delay().status(401);

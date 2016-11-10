@@ -147,9 +147,37 @@ tests.testMethod('refreshTokenPair', function (t) {
 });
 
 tests.testMethod('verifyAccessToken', function (t) {
-  t.test('It should return 401 for invalid token', catchHandler(async function (st, authController) {
-    var result = await authController.verifyAccessToken('127.0.0.1', '**&^7643hjgsdf');
-    st.equals(result, null);
+  t.test('It should return 401 for invalid access token', catchHandler(async function (st, authController) {
+    authController.authenticator.getUserForToken = async (encodedToken, tokenType) => {
+      st.equals(tokenType, 'access');
+      return null;
+    };
+
+    var result = new Result();
+    var user = await authController.verifyAccessToken(result, '127.0.0.1', '**&^7643hjgsdf');
+    st.equals(user, null);
+    st.equals(result.changes.status, 401);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 401, without delay, for an expired access token', catchHandler(async function (st, authController) {
+    var user = {
+      requestToken: {
+        accessTokenExpires: new Date(Date.now() - 10000)
+      }
+    };
+
+    authController.authenticator.getUserForToken = async (encodedToken, tokenType) => {
+      st.equals(tokenType, 'access');
+      return user;
+    };
+
+    var result = new Result();
+    var userResult = await authController.verifyAccessToken(result, '127.0.0.1', '<encoded token>');
+    st.equals(userResult, null);
+    st.equals(result.changes.status, 401);
+    st.equals(result.changes.delay, 0);
     st.end();
   }));
 });
