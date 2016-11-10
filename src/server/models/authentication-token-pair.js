@@ -58,6 +58,9 @@ AuthenticationTokenPair.schema = new Schema({
     column: 'token_id',
     id: true
   },
+  longExpiry: {
+    column: 'long_expiry'
+  },
   userId: {
     column: 'user_id',
     readonly: true

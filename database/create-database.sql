@@ -33,6 +33,7 @@ CREATE TABLE `user` (
 CREATE TABLE `authentication_token_pair` (
     `token_id` int(11) NOT NULL AUTO_INCREMENT,
     `user_id` int(11) NOT NULL,
+    `long_expiry` bool NOT NULL DEFAULT FALSE,
     `access_token_hash` varchar(128) NOT NULL,
     `access_token_expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `refresh_token_hash` varchar(128) NOT NULL,
