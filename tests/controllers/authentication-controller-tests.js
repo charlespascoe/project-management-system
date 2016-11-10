@@ -85,6 +85,67 @@ tests.testMethod('login', function (t) {
   }));
 });
 
+tests.testMethod('refreshTokenPair', function (t) {
+  t.test('It should return 401 for non-existant user', catchHandler(async function (st, authController) {
+    authController.authenticator.getUserForToken = async (encodedToken, tokenType) => {
+      st.equals(tokenType, 'refresh');
+      return null;
+    };
+
+    var result = await authController.refreshTokenPair(new Result(), '127.0.0.1', '<encoded token>');
+    st.equals(result.changes.status, 401);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 401 for an expired refresh token', catchHandler(async function (st, authController) {
+    var user = {
+      requestToken: {
+        refreshTokenExpires: new Date(Date.now() - 10000)
+      }
+    };
+
+    authController.authenticator.getUserForToken = async (encodedToken, tokenType) => {
+      st.equals(tokenType, 'refresh');
+      return user;
+    };
+
+    var result = await authController.refreshTokenPair(new Result(), '127.0.0.1', '<encoded token>');
+    st.equals(result.changes.status, 401);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 200 and a new token pair for a valid refresh token', catchHandler(async function (st, authController) {
+    var user = {
+      requestToken: {
+        refreshTokenExpires: new Date(Date.now() + 10000)
+      }
+    };
+
+    authController.authenticator.getUserForToken = async (encodedToken, tokenType) => {
+      st.equals(tokenType, 'refresh');
+      return user;
+    };
+
+    authController.authenticator.refreshTokenPair = async (usr, token) => {
+      st.equals(usr, user);
+      st.equals(token, user.requestToken);
+      return {
+        serialise: () => {
+          return {id: 123};
+        }
+      }
+    };
+
+    var result = await authController.refreshTokenPair(new Result(), '127.0.0.1', '<encoded token>');
+    st.equals(result.changes.status, 200);
+    st.equals(result.changes.delay, 0);
+    st.equals(result.changes.data.id, 123);
+    st.end();
+  }));
+});
+
 tests.testMethod('verifyAccessToken', function (t) {
   t.test('It should return 401 for invalid token', catchHandler(async function (st, authController) {
     var result = await authController.verifyAccessToken('127.0.0.1', '**&^7643hjgsdf');

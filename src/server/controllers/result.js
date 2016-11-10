@@ -10,6 +10,7 @@ export default class Result {
     this.timeout = Result.defaultTimeout;
     this.startedAt = Date.now();
     this.changes = {
+      delay: 0,
       cookies: [],
       clearCookies: []
     };
