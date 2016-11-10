@@ -3,7 +3,7 @@ import catchAsync from 'server/catch-async';
 import TestFrame from 'tests/test-frame';
 
 const testSalt = Buffer.from('0123456789abcdef', 'hex'),
-      testHash = '$argon2i$v=19$m=16384,t=32,p=1$ASNFZ4mrze8$pRRO6aqIjWtaF4dYF3QUBk+pEGDA4LdifM4jTyOj55o';
+      testHash = '$argon2i$v=19$m=16,t=1,p=1$ASNFZ4mrze8$cDN9Es9OTiTiy+IPmusd+mzOBNtG/5S/Q5kRBbdxnJI';
 
 
 const catchHandler = catchAsync(function (err, st) {
@@ -11,7 +11,17 @@ const catchHandler = catchAsync(function (err, st) {
   st.end();
 });
 
-const tests = new TestFrame('PasswordHasher', PasswordHasher);
+const tests = new TestFrame('PasswordHasher');
+
+tests.createInstance = function () {
+  return new PasswordHasher({
+    timeCost: 1,
+    memoryCost: 16,
+    parallelism: 1,
+    hashLength: 32,
+    saltLength: 16
+  });
+};
 
 tests.testMethod('randomSalt', function (t) {
   t.test('It should return the correct length', catchHandler(async function (st) {
