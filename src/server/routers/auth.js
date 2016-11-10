@@ -17,4 +17,9 @@ router.get('/auth-token', catchHandler(async function (req, res) {
   await result.end();
 }));
 
+router.delete('/auth-token/:tokenId?', catchHandler(async function (req, res) {
+  var result = await authenticationController.deleteTokenPair(req.params.tokenId);
+  await result.end();
+}));
+
 export default router;

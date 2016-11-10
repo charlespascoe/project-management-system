@@ -97,6 +97,28 @@ export class AuthenticationController {
 
     return result.data(authTokenPair.serialise());
   }
+
+  async deleteTokenPair(result, user, tokenId) {
+    if (!validate(tokenId).optional().isString().matches(/^\d+$/).isValid()) {
+      return result.delay().status(httpStatuses.BAD_REQUEST);
+    }
+
+    var authTokenPair;
+
+    if (tokenId) {
+      tokenId = parseInt(tokenId);
+
+      authTokenPair = user.authTokens.find(atp => atp.id == tokenId);
+    } else {
+      authTokenPair = user.requestToken;
+    }
+
+    if (authTokenPair) {
+      await authTokenPair.delete();
+    }
+
+    return result.status(httpStatuses.NO_CONTENT);
+  }
 }
 
 export default new AuthenticationController(authenticator, loggers);
