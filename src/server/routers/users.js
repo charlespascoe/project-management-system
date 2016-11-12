@@ -3,7 +3,7 @@ import loggers from 'server/loggers';
 import catchAsync from 'server/catch-async';
 import User from 'server/models/user';
 import httpStatuses from 'http-status-codes';
-import userController from 'server/controllers/user-controller';
+import usersController from 'server/controllers/users-controller';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.main.error({err: err});
@@ -46,7 +46,7 @@ router.param('userIdOrEmail', function (req, res, next) {
 
 router.get('/:userIdOrEmail', catchHandler(async function (req, res) {
   loggers.main.debug('get /users/' + req.params.userIdOrEmail);
-  await userController.getUser(res.result, req.user, req.params.userIdOrEmail);
+  await usersController.getUser(res.result, req.user, req.params.userIdOrEmail);
   await res.result.end();
 }));
 

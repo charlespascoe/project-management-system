@@ -6,7 +6,7 @@ import generalPermissions from 'server/security/general-permissions';
 import loggers from 'server/loggers';
 import User from 'server/models/user';
 
-export class UserController {
+export class UsersController {
   constructor(loggers, authorisor, users) {
     this.loggers = loggers;
     this.authorisor = authorisor;
@@ -47,4 +47,4 @@ export class UserController {
   }
 }
 
-export default new UserController(loggers.forClass('UserController'), authorisor, users);
+export default new UsersController(loggers.forClass('UsersController'), authorisor, users);
