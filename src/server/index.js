@@ -18,6 +18,7 @@ app.locals.version = '0.0.0-DEV';
 
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views/pages');
+app.disable('x-powered-by');
 
 app.use(function (req, res, next) {
   res.result = new Result(res);
