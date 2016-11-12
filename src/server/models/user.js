@@ -37,10 +37,12 @@ User.schema = new Schema({
     validate: (email) => validate(email).isString().minLength(1).maxLength(128).isValid()
   },
   firstName: {
-    column: 'first_name'
+    column: 'first_name',
+    validate: (firstName) => validate(firstName).isString().minLength(1).maxLength(64).isValid()
   },
   otherNames: {
-    column: 'other_names'
+    column: 'other_names',
+    validate: (otherNames) => validate(otherNames).isString().minLength(1).maxLength(128).isValid()
   },
   passHash: {
     column: 'pass_hash'
@@ -50,6 +52,7 @@ User.schema = new Schema({
   },
   sysadmin: {
     column: 'sysadmin',
-    readonly: true
+    readonly: true,
+    getter: (sysadmin) => sysadmin ? true : false // Converts int (as stored in database) to boolean
   }
 });
