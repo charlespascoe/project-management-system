@@ -63,4 +63,14 @@ export default class Schema {
       .map((idProp) => `\`${idProp.column}\` = :${idProp.column}`)
       .join(' AND ');
   }
+
+  invalid(data) {
+    for (var key in data) {
+      if (!(key in this.properties)) continue;
+
+      if (!this.properties[key].validate(data[key])) return key;
+    }
+
+    return null;
+  }
 }
