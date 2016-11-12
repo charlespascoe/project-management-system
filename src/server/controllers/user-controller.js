@@ -6,7 +6,6 @@ import generalPermissions from 'server/security/general-permissions';
 import loggers from 'server/loggers';
 import User from 'server/models/user';
 
-const className = 'UserController';
 export class UserController {
   constructor(loggers, authorisor, users) {
     this.loggers = loggers;
@@ -15,9 +14,6 @@ export class UserController {
   }
 
   async getUser(result, user, idOrEmail) {
-    loggers.main.debug(`${idOrEmail} (${typeof idOrEmail})`);
-    const loc = `${className}.getUser`;
-
     // Note: this method assumes that idOrEmail has already be validated and converted to a number (if it's an ID)
 
     if (typeof idOrEmail == 'string') idOrEmail = idOrEmail.toLowerCase();
@@ -28,7 +24,7 @@ export class UserController {
     }
 
     if (!this.authorisor.hasGeneralPermission(user, generalPermissions.GET_OTHER_USER_DETAILS)) {
-      this.loggers.security.warn({user: user, loc: loc}, `Unauthorised attempt to get another user (User ID or email: ${idOrEmail})`);
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to get another user (User ID or email: ${idOrEmail})`);
       result.delay().status(httpStatuses.FORBIDDEN);
       return;
     }
@@ -42,7 +38,7 @@ export class UserController {
     }
 
     if (!otherUser) {
-      this.loggers.main.warn({user: user, loc: loc}, `Non-existent user (User ID or email: ${idOrEmail}`);
+      this.loggers.main.warn({user: user}, `Non-existent user (User ID or email: ${idOrEmail}`);
       result.delay().status(httpStatuses.NOT_FOUND);
       return;
     }
@@ -51,4 +47,4 @@ export class UserController {
   }
 }
 
-export default new UserController(loggers, authorisor, users);
+export default new UserController(loggers.forClass('UserController'), authorisor, users);
