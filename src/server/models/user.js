@@ -10,6 +10,15 @@ export default class User extends Model {
     this.projectAssignments = projectAssignments;
   }
 
+  serialise() {
+    return {
+      id: this.id,
+      email: this.email,
+      firstName: this.firstName,
+      otherNames: this.otherNames
+    };
+  }
+
   async delete() {
     this.active = false;
     await this.save();
