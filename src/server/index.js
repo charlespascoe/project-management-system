@@ -8,6 +8,7 @@ import Result from 'server/controllers/result';
 import config from 'server/config';
 import routers from 'server/routers';
 import authenticate from 'server/middleware/authenticate';
+import cors from 'cors';
 
 const app = express();
 const port = 8080;
@@ -27,6 +28,13 @@ app.use(function (req, res, next) {
 
   next();
 });
+
+app.use(function (err, req, res, next) {
+  loggers.main.error({err: err});
+  res.result.delay().status(500).end();
+});
+
+app.use(cors());
 
 app.use('/public', express.static(__dirname + '/public'));
 app.use(bodyParser.json());
