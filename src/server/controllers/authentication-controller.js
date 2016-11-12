@@ -25,6 +25,8 @@ export class AuthenticationController {
     if (validate(authenticationData).isString().matches(/^Bearer [^\s]+/).isValid()) {
       return await this.refreshTokenPair(result, ipAddress, authenticationData.split(' ')[1], longExpiry);
     }
+
+    result.delay().status(401);
   }
 
   parseBasicAuth(basicAuthString) {
