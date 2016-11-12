@@ -123,4 +123,4 @@ export class AuthenticationController {
   }
 }
 
-export default new AuthenticationController(authenticator, loggers);
+export default new AuthenticationController(authenticator, loggers.forClass('AuthenticationController'));

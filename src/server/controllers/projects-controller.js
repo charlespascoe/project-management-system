@@ -18,7 +18,7 @@ export class ProjectsController {
   async createProject(result, user, data) {
     if (!Project.schema.name.validate(data.name) ||
         !Project.schema.id.validate(data.id)) {
-      this.loggers.main.warn({user: user, loc: 'ProjectsController.createProject'}, 'Invalid data');
+      this.loggers.main.warn({user: user}, 'Invalid data');
       return result.delay().status(httpStatuses.BAD_REQUEST);
     }
 
@@ -34,4 +34,4 @@ export class ProjectsController {
 
 }
 
-export default new ProjectsController(loggers, projects);
+export default new ProjectsController(loggers.forClass('ProjectsController'), projects);
