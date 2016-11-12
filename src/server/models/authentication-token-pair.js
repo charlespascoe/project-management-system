@@ -28,6 +28,7 @@ export default class AuthenticationTokenPair extends Model {
 
     return {
       id: this.id,
+      userId: this.userId,
       accessToken: Buffer.from(`${this.userId}:${this.accessToken.toString('hex')}`).toString('base64'),
       refreshToken: Buffer.from(`${this.userId}:${this.refreshToken.toString('hex')}`).toString('base64')
     };
