@@ -47,7 +47,6 @@ export class AuthenticationController {
     if (!User.schema.email.validate(username) ||
         !validate(password).isString().minLength(1).maxLength(1024).isValid()) {
       this.loggers.security.warn({ip: ipAddress}, 'Invalid login attempt');
-      this.loggers.security.debug({username: username, password: password});
       return result.delay().status(httpStatuses.BAD_REQUEST);
     }
 
