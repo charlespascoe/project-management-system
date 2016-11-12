@@ -1,6 +1,9 @@
 const generalPermissions = {
   GET_OTHER_USER_DETAILS: {
     sysadmin: true
+  },
+  ADD_USER: {
+    sysadmin: true
   }
 };
 
