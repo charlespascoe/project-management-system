@@ -11,12 +11,19 @@ export default class User extends Model {
   }
 
   serialise() {
-    return {
+    var data = {
       id: this.id,
       email: this.email,
       firstName: this.firstName,
-      otherNames: this.otherNames
+      otherNames: this.otherNames,
+      sysadmin: this.sysadmin
     };
+
+    if (this.requestToken) {
+      data.sysadminElevationExpires = this.requestToken.sysadminElevationExpires;
+    }
+
+    return data;
   }
 
   async delete() {
