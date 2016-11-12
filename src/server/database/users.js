@@ -10,6 +10,15 @@ export class Users {
     this.roles = roles;
   }
 
+  async getAllUsers() {
+    var query =
+      'SELECT * FROM `user`;';
+
+    var results = await this.database.query(query);
+
+    return results.map(row => new User(database, row));
+  }
+
   async getUserByEmail(email) {
     var userQuery =
       'SELECT `user_id` FROM `user` WHERE `email` = :email;';

@@ -12,17 +12,10 @@ const catchHandler = catchAsync(function (err, req, res) {
 
 var router = new Router();
 
-loggers.main.info('TEST');
-
-router.use((req, res, next) => {
-  loggers.main.warn('request!');
-  next();
-});
-
 router.route('/')
   .get(catchHandler(async function (req, res) {
-    loggers.main.debug('get /users/');
-    // Get users
+    await usersController.getUsers(res.result, req.user);
+    await res.result.end();
   }))
   .post(catchHandler(async function (req, res) {
     loggers.main.debug('post /users/');

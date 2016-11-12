@@ -13,6 +13,18 @@ export class UsersController {
     this.users = users;
   }
 
+  async getUsers(result, user) {
+    if (!this.authorisor.hasGeneralPermission(user, generalPermissions.GET_OTHER_USER_DETAILS)) {
+      this.loggers.security.warn({user: user}, 'Unauthorised attempt to get all users');
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    var users = await this.users.getAllUsers();
+
+    result.data(users.map(user => user.serialise()));
+  }
+
   async getUser(result, user, idOrEmail) {
     // Note: this method assumes that idOrEmail has already be validated and converted to a number (if it's an ID)
 
