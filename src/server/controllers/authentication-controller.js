@@ -123,6 +123,7 @@ export class AuthenticationController {
 
   async elevateUser(result, user, base64Pass) {
     if (!validate(base64Pass).isBase64().isValid()) {
+      this.loggers.security.debug(user, 'Missing or invalid \'X-Additional-Auth\' header when requesting elevation');
       result.delay().status(httpStatuses.BAD_REQUEST).data({
         msg: 'Missing or invalid \'X-Additional-Auth\' header'
       });
@@ -130,8 +131,6 @@ export class AuthenticationController {
     }
 
     var password = Buffer.from(base64Pass, 'base64').toString('utf8');
-
-    this.loggers.security.debug(password);
 
     var elevated = await this.authenticator.elevateUser(user, password);
 
