@@ -7,6 +7,10 @@ export default class Role extends Model {
     super(database, 'role', data, Role.schema);
     this.permissions = permission;
   }
+
+  hasPermission(permKey) {
+    return this.permissions.find(p => p.key === permKey) != null;
+  }
 }
 
 Role.schema = new Schema({
