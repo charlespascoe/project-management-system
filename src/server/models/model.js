@@ -25,16 +25,16 @@ export default class Model {
       }
 
       if (property.readonly || property.id) {
-        Utils.readonlyProperty(this, property.propName, this._data[property.column]);
+        Utils.readonlyProperty(this, property.propName, property.getter(this._data[property.column]));
         continue;
       }
 
       (function (prop) {
-        Object.defineProperty(this, property.propName, {
-          get: () => this._data[prop.column],
+        Object.defineProperty(this, prop.propName, {
+          get: () => prop.getter(this._data[prop.column]),
           set: (value) => {
             // Type checking to go here
-            this._data[prop.column] = value;
+            this._data[prop.column] = prop.setter(value);
           },
         });
       }.bind(this))(property);

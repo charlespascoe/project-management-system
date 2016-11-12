@@ -6,7 +6,9 @@ export class SchemaProperty {
       column = propName,
       id = false,
       readonly = false,
-      validate = () => true
+      validate = () => true,
+      getter = (val) => val,
+      setter = (val) => val
     } = config;
 
     Utils.readonlyProperty(this, 'propName', propName);
@@ -14,6 +16,8 @@ export class SchemaProperty {
     Utils.readonlyProperty(this, 'readonly', readonly);
     Utils.readonlyProperty(this, 'id', id);
     Utils.readonlyProperty(this, 'validate', validate);
+    Utils.readonlyProperty(this, 'getter', getter);
+    Utils.readonlyProperty(this, 'setter', setter);
   }
 }
 
