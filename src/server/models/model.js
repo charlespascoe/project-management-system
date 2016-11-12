@@ -20,7 +20,8 @@ export default class Model {
 
     for (var property of schema) {
       if (!this._data.hasOwnProperty(property.column)) {
-        throw new Error(`Data element expected: column ${property.column} not found on data for ${this._tableName}`);
+        continue;
+        //throw new Error(`Data element expected: column ${property.column} not found on data for ${this._tableName}`);
       }
 
       if (property.readonly || property.id) {
