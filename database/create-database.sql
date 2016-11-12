@@ -1,6 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.14.0
-# Last Modified: 22/04/2016
+# Version: 0.14.1
 
 # Drop the existing database (this is a create script, not an update script!)
 DROP DATABASE IF EXISTS `proj_mgr`;
@@ -38,7 +37,7 @@ CREATE TABLE `authentication_token_pair` (
     `access_token_expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `refresh_token_hash` varchar(128) NOT NULL,
     `refresh_token_expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `sysadmin_elevation_expires` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    `sysadmin_elevation_expires` timestamp NULL,
 
     PRIMARY KEY (`token_id`),
 
