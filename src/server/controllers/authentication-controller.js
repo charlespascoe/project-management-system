@@ -145,6 +145,18 @@ export class AuthenticationController {
       expires: user.requestToken.sysadminElevationExpires
     });
   }
+
+  async dropElevation(result, user) {
+    if (!user.sysadmin) {
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    user.requestToken.sysadminElevationExpires = null;
+    await user.requestToken.save();
+
+    result.status(httpStatuses.NO_CONTENT);
+  }
 }
 
 export default new AuthenticationController(authenticator, loggers.forClass('AuthenticationController'));
