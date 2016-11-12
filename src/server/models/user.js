@@ -38,5 +38,9 @@ User.schema = new Schema({
   },
   active: {
     column: 'active'
+  },
+  sysadmin: {
+    column: 'sysadmin',
+    readonly: true
   }
 });
