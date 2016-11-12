@@ -1,9 +1,9 @@
-import authenticationController from 'server/controllers/authentication-controller';
+import { Router } from 'express';
 import authenticate from 'server/middleware/authenticate';
-import loggers from 'server/loggers';
+import authenticationController from 'server/controllers/authentication-controller';
 import catchAsync from 'server/catch-async';
 import httpStatuses from 'http-status-codes';
-import { Router } from 'express';
+import loggers from 'server/loggers';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.security.error({err: err});

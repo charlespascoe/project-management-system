@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import loggers from 'server/loggers';
 import catchAsync from 'server/catch-async';
 import httpStatuses from 'http-status-codes';
+import loggers from 'server/loggers';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.main.error({err: err});
