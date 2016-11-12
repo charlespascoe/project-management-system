@@ -16,7 +16,7 @@ export class AuthenticationController {
     if (validate(authenticationData).isString().matches(/^Basic [^\s]+/).isValid()) {
       var cred = this.parseBasicAuth(authenticationData.split(' ')[1]);
 
-      if (cred == null) return result.delay().status(400);
+      if (cred == null) return result.delay().status(httpStatuses.BAD_REQUEST);
 
       // login method will validate username and password
       return await this.login(result, ipAddress, cred.username, cred.password, longExpiry);
@@ -26,7 +26,7 @@ export class AuthenticationController {
       return await this.refreshTokenPair(result, ipAddress, authenticationData.split(' ')[1], longExpiry);
     }
 
-    result.delay().status(401);
+    result.delay().status(httpStatuses.UNAUTHORIZED);
   }
 
   parseBasicAuth(basicAuthString) {
@@ -48,14 +48,14 @@ export class AuthenticationController {
         !validate(password).isString().minLength(1).maxLength(1024).isValid()) {
       this.loggers.security.warn({ip: ipAddress}, 'Invalid login attempt');
       this.loggers.security.debug({username: username, password: password});
-      return result.delay().status(400);
+      return result.delay().status(httpStatuses.BAD_REQUEST);
     }
 
     var authTokenPair = await this.authenticator.login(username, password, longExpiry);
 
     if (authTokenPair == null) {
       this.loggers.security.warn({ip: ipAddress}, `Failed login attempt for ${username}`);
-      return result.delay().status(401);
+      return result.delay().status(httpStatuses.UNAUTHORIZED);
     }
 
     return result.data(authTokenPair.serialise());
@@ -86,13 +86,13 @@ export class AuthenticationController {
 
     if (user == null) {
       this.loggers.security.warn({ip: ipAddress}, 'Refresh request made using invalid refresh token');
-      return result.delay().status(401);
+      return result.delay().status(httpStatuses.UNAUTHORIZED);
     }
 
     if (!user.requestToken.refreshTokenExpires || moment().isAfter(user.requestToken.refreshTokenExpires)) {
       // Refresh token correct, but has expired - expected, so log only to debug
       this.loggers.security.debug({ip: ipAddress, user: user}, 'Refresh Token Expired');
-      return result.delay().status(401);
+      return result.delay().status(httpStatuses.UNAUTHORIZED);
     }
 
     var authTokenPair = await this.authenticator.refreshTokenPair(user, user.requestToken, longExpiry);
