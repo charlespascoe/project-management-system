@@ -32,7 +32,7 @@ if (config.logging.logOutputDir) {
   }
 }
 
-export default {
+const loggers = {
   main: bunyan.createLogger(Utils.defaults(commonConfig, {
     name: 'main'
   })),
@@ -43,3 +43,15 @@ export default {
     name: 'security'
   }))
 };
+
+export default Utils.defaults(loggers, {
+  forClass: function (className) {
+    var classLoggers = {};
+
+    for (var loggerName in loggers) {
+      classLoggers[loggerName] = loggers[loggerName].child({cls: className});
+    }
+
+    return classLoggers;
+  }
+});
