@@ -77,5 +77,8 @@ AuthenticationTokenPair.schema = new Schema({
   },
   refreshTokenExpires: {
     column: 'refresh_token_expires'
+  },
+  sysadminElevationExpires: {
+    column: 'sysadmin_elevation_expires'
   }
 });
