@@ -24,4 +24,10 @@ router.delete('/auth-token/:tokenId?', authenticate, catchHandler(async function
   await res.result.end();
 }));
 
+router.get('/elevation', authenticate, catchHandler(async function (req, res) {
+  var base64Pass = req.headers['x-additional-auth'];
+  await authenticationController.elevateUser(res.result, req.user, base64Pass);
+  await res.result.end();
+}));
+
 export default router;

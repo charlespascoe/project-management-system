@@ -120,6 +120,31 @@ export class AuthenticationController {
 
     return result.status(httpStatuses.NO_CONTENT);
   }
+
+  async elevateUser(result, user, base64Pass) {
+    if (!validate(base64Pass).isBase64().isValid()) {
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Missing or invalid \'X-Additional-Auth\' header'
+      });
+      return;
+    }
+
+    var password = Buffer.from(base64Pass, 'base64').toString('utf8');
+
+    this.loggers.security.debug(password);
+
+    var elevated = await this.authenticator.elevateUser(user, password);
+
+    if (!elevated) {
+      this.loggers.security.warn({user: user}, 'Unauthorised Sysadmin Elevation request');
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    result.data({
+      expires: user.requestToken.sysadminElevationExpires
+    });
+  }
 }
 
 export default new AuthenticationController(authenticator, loggers.forClass('AuthenticationController'));

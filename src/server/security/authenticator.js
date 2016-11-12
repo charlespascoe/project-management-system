@@ -9,7 +9,8 @@ const keyLength = 32,
       accessExpiry = 60 * 60 * 1000,
       accessExpiryLong = 24 * 60 * 60 * 1000,
       refreshExpiry = 6 * 60 * 60 * 1000,
-      refreshExpiryLong = 30 * 24 * 60 * 60 * 1000;
+      refreshExpiryLong = 30 * 24 * 60 * 60 * 1000,
+      sysadminExpiry = 15 * 60 * 1000;
 
 export class Authenticator {
   constructor(passHasher, users, authTokens, validate) {
@@ -87,6 +88,19 @@ export class Authenticator {
     user.requestToken = authTokenPair;
 
     return user;
+  }
+
+  async elevateUser(user, password) {
+    if (!user.sysadmin) return false;
+
+    var correctPass = await this.passHasher.verifyUserPassword(password, user);
+
+    if (!correctPass) return false;
+
+    user.requestToken.sysadminElevationExpires = new Date(Date.now() + sysadminExpiry);
+    await user.requestToken.save();
+
+    return true;
   }
 }
 
