@@ -18,12 +18,11 @@ router.route('/')
     await res.result.end();
   }))
   .post(catchHandler(async function (req, res) {
-    loggers.main.debug('post /users/');
-    // Add user
+    await usersController.addUser(res.result, req.user, req.body);
+    await res.result.end();
   }));
 
 router.param('userIdOrEmail', function (req, res, next) {
-  loggers.main.warn('userIdOrEmail: ' + req.params.userIdOrEmail);
   if (User.schema.id.validate(req.params.userIdOrEmail)) {
     req.params.userIdOrEmail = parseInt(req.params.userIdOrEmail);
     next();
@@ -38,7 +37,6 @@ router.param('userIdOrEmail', function (req, res, next) {
 });
 
 router.get('/:userIdOrEmail', catchHandler(async function (req, res) {
-  loggers.main.debug('get /users/' + req.params.userIdOrEmail);
   await usersController.getUser(res.result, req.user, req.params.userIdOrEmail);
   await res.result.end();
 }));

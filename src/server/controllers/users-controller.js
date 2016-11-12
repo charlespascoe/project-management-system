@@ -13,6 +13,36 @@ export class UsersController {
     this.users = users;
   }
 
+  async addUser(result, user, data) {
+    if (!this.authorisor.hasGeneralPermission(user, generalPermissions.ADD_USER)) {
+      this.loggers.security.warn({user: user}, 'Unauthorised attempt to add a user');
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    // Removes other keys
+    data = {
+      email: data.email,
+      firstName: data.firstName,
+      otherNames: data.otherNames
+    };
+
+    var invalidItem = User.schema.invalid(data);
+
+    if (invalidItem) {
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: `Missing or invalid key: '${invalidItem}'`
+      });
+      return;
+    }
+
+    var userId = await this.users.addUser(data);
+
+    result.status(httpStatuses.CREATED).data({
+      id: userId
+    });
+  }
+
   async getUsers(result, user) {
     if (!this.authorisor.hasGeneralPermission(user, generalPermissions.GET_OTHER_USER_DETAILS)) {
       this.loggers.security.warn({user: user}, 'Unauthorised attempt to get all users');
