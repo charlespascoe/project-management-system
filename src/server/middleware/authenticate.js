@@ -14,7 +14,8 @@ export default catchHandler(async function authenticate(req, res, next) {
   var authHeader = (req.headers || {}).authorization;
 
   if (!validate(authHeader).isString().matches(/^Bearer [^\s]+$/).isValid()) {
-    return res.result.delay().status(httpStatuses.UNAUTHORIZED);
+    res.result.delay().status(httpStatuses.UNAUTHORIZED).end();
+    return;
   }
 
   var accessToken = authHeader.split(' ')[1];
