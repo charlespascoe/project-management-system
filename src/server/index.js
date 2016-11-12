@@ -42,10 +42,6 @@ app.use(bodyParser.json());
 
 routers(app);
 
-app.get('/something', authenticate, function (req, res) {
-  res.status(200).json({result: true});
-});
-
 app.use(function (req, res) {
   loggers.main.warn({ip: req.ip}, `Route not found: ${req.path}`);
   res.result.delay().status(404).end();
