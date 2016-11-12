@@ -20,7 +20,8 @@ User.schema = new Schema({
   id: {
     column: 'user_id',
     id: true,
-    readonly: true
+    readonly: true,
+    validate: (id) => validate(id).isString().matches(/^\d{1,11}$/).isValid() || validate(id).isNumber().min(1).max(99999999999).isValid()
   },
   email: {
     column: 'email',
