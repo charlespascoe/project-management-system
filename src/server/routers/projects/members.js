@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import loggers from 'server/loggers';
 import catchAsync from 'server/catch-async';
+import httpStatuses from 'http-status-codes';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.main.error({err: err});
-  res.result.delay().status(500).end();
+  res.result.delay().status(httpStatuses.INTERNAL_SERVER_ERROR).end();
 });
 
 var router = new Router();
@@ -19,7 +20,7 @@ router.route('/')
 
 router.param('userId', function (req, res, next) {
   if (!validate(req.params.userId).matches(/^\d+$/).isValid()) {
-    res.result.delay().status(400).end();
+    res.result.delay().status(httpStatuses.BAD_REQUEST).end();
     return;
   }
 

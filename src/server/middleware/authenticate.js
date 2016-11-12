@@ -7,7 +7,7 @@ import httpStatuses from 'http-status-codes';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.security.error({err: err});
-  res.result.delay().status(401).end();
+  res.result.delay().status(httpStatuses.INTERNAL_SERVER_ERROR).end();
 });
 
 export default catchHandler(async function authenticate(req, res, next) {

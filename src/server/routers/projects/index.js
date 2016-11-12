@@ -5,10 +5,11 @@ import membersRouter from 'server/routers/projects/members';
 import tasksRouter from 'server/routers/projects/tasks';
 import validate from 'server/validation';
 import projectsController from 'server/controllers/projects-controller';
+import httpStatuses from 'http-status-codes';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.main.error({err: err});
-  res.result.delay().status(500).end();
+  res.result.delay().status(httpStatuses.INTERNAL_SERVER_ERROR).end();
 });
 
 var router = new Router();
@@ -25,7 +26,7 @@ router.route('/')
 
 router.param('projectId', function (req, res, next) {
   if (!validate(req.params.projectId).matches(/^\d+$/).isValid()) {
-    res.result.delay().status(400).end();
+    res.result.delay().status(httpStatuses.BAD_REQUEST).end();
     return;
   }
 

@@ -2,11 +2,12 @@ import authenticationController from 'server/controllers/authentication-controll
 import authenticate from 'server/middleware/authenticate';
 import loggers from 'server/loggers';
 import catchAsync from 'server/catch-async';
+import httpStatuses from 'http-status-codes';
 import { Router } from 'express';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.security.error({err: err});
-  res.result.delay().status(500).end();
+  res.result.delay().status(httpStatuses.INTERNAL_SERVER_ERROR).end();
 });
 
 var router = new Router();

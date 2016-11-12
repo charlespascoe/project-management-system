@@ -9,6 +9,7 @@ import config from 'server/config';
 import routers from 'server/routers';
 import authenticate from 'server/middleware/authenticate';
 import cors from 'cors';
+import httpStatuses from 'http-status-codes';
 
 const app = express();
 const port = 8080;
@@ -32,7 +33,7 @@ app.use(function (req, res, next) {
 
 app.use(function (err, req, res, next) {
   loggers.main.error({err: err});
-  res.result.delay().status(500).end();
+  res.result.delay().status(httpStatuses.INTERNAL_SERVER_ERROR).end();
 });
 
 app.use(cors());
@@ -43,8 +44,8 @@ app.use(bodyParser.json());
 routers(app);
 
 app.use(function (req, res) {
-  loggers.main.warn({ip: req.ip}, `Route not found: ${req.path}`);
-  res.result.delay().status(404).end();
+  loggers.main.debug({ip: req.ip}, `Route not found: ${req.path}`);
+  res.result.delay().status(httpStatuses.NOT_FOUND).end();
 });
 
 app.listen(port, (e) => e ? loggers.main.fatal({err: e}) : loggers.main.info(`Listening on port ${port}`));
