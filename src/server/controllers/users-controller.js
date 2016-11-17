@@ -48,14 +48,14 @@ export class UsersController {
     });
   }
 
-  async getUsers(result, user) {
+  async getUsers(result, user, includeInactive) {
     if (!this.authorisor.hasGeneralPermission(user, generalPermissions.GET_OTHER_USER_DETAILS)) {
       this.loggers.security.warn({user: user}, 'Unauthorised attempt to get all users');
       result.delay().status(httpStatuses.FORBIDDEN);
       return;
     }
 
-    var users = await this.users.getAllUsers();
+    var users = await this.users.getAllUsers(includeInactive);
 
     result.data(users.map(user => user.serialise()));
   }

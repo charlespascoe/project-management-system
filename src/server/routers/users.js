@@ -14,7 +14,7 @@ var router = new Router();
 
 router.route('/')
   .get(catchHandler(async function (req, res) {
-    await usersController.getUsers(res.result, req.user);
+    await usersController.getUsers(res.result, req.user, req.query['include-inactive'] === 'true');
     await res.result.end();
   }))
   .post(catchHandler(async function (req, res) {
