@@ -23,7 +23,7 @@ export class Authenticator {
   async login(username, password, longExpiry) {
     var user = await this.users.getUserByEmail(username);
 
-    if (user == null) return null;
+    if (user == null || user.active == false || user.passHash == null) return null;
 
     var correctPass = await this.passHasher.verifyUserPassword(password, user);
 
@@ -77,7 +77,7 @@ export class Authenticator {
 
     var user = await this.users.getUserById(parsedToken.userId);
 
-    if (user == null) return null;
+    if (user == null || user.active == false) return null;
 
     var tokenHash = CryptoUtils.hash(parsedToken.token).toString('hex');
 
