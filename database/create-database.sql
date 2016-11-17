@@ -19,10 +19,10 @@ USE `proj_mgr`;
 
 CREATE TABLE `user` (
     `user_id` int(11) NOT NULL AUTO_INCREMENT,
-    `email` varchar(128) NOT NULL UNIQUE,
+    `email` varchar(128) DEFAULT NULL UNIQUE,
     `first_name` varchar(64) NOT NULL,
     `other_names` varchar(128) NOT NULL,
-    `pass_hash` varchar(256) NOT NULL,
+    `pass_hash` varchar(256) DEFAULT NULL,
     `active` bool NOT NULL DEFAULT TRUE,
     `sysadmin` bool NOT NULL DEFAULT FALSE,
 
