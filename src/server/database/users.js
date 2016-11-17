@@ -57,7 +57,13 @@ export class Users {
     var query =
       'INSERT INTO `user` SET ' + SqlUtils.formatData(columnData) + ';';
 
-    var result = await this.database.query(query, columnData);
+    try {
+      var result = await this.database.query(query, columnData);
+    } catch (e) {
+      // email exists, return null
+      if (e.code == 'ER_DUP_ENTRY') return null;
+      throw e;
+    }
 
     return result.insertId;
   }
