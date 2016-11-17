@@ -48,6 +48,42 @@ export class UsersController {
     });
   }
 
+  async deleteUser(result, user, idOrEmail) {
+    // Note: this method assumes that idOrEmail has already be validated and converted to a number (if it's an ID)
+
+    if (typeof idOrEmail == 'string') idOrEmail = idOrEmail.toLowerCase();
+
+    if (user.id == idOrEmail || user.email == idOrEmail) {
+      this.loggers.security.warn({user: user}, 'User attempted to delete their own user');
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    if (!this.authorisor.hasGeneralPermission(user, generalPermissions.DELETE_USER)) {
+      this.loggers.security.warn({user: user}, 'Unauthorised attempt to delete another user');
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    var otherUser;
+
+    if (typeof idOrEmail == 'number') {
+      otherUser = await this.users.getUserById(idOrEmail);
+    } else if (typeof idOrEmail == 'string') {
+      otherUser = await this.users.getUserByEmail(idOrEmail);
+    }
+
+    if (!otherUser) {
+      this.loggers.main.warn({user: user}, `Non-existent user (User ID or email: ${idOrEmail})`);
+      result.delay().status(httpStatuses.NOT_FOUND);
+      return;
+    }
+
+    await otherUser.delete();
+
+    result.status(httpStatuses.NO_CONTENT);
+  }
+
   async getUsers(result, user, includeInactive) {
     if (!this.authorisor.hasGeneralPermission(user, generalPermissions.GET_OTHER_USER_DETAILS)) {
       this.loggers.security.warn({user: user}, 'Unauthorised attempt to get all users');

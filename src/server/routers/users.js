@@ -36,9 +36,14 @@ router.param('userIdOrEmail', function (req, res, next) {
   res.result.delay().status(httpStatuses.BAD_REQUEST).end();
 });
 
-router.get('/:userIdOrEmail', catchHandler(async function (req, res) {
-  await usersController.getUser(res.result, req.user, req.params.userIdOrEmail);
-  await res.result.end();
-}));
+router.route('/:userIdOrEmail')
+  .get(catchHandler(async function (req, res) {
+    await usersController.getUser(res.result, req.user, req.params.userIdOrEmail);
+    await res.result.end();
+  }))
+  .delete(catchHandler(async function (req, res) {
+    await usersController.deleteUser(res.result, req.user, req.params.userIdOrEmail);
+    await res.result.end();
+  }));
 
 export default router;
