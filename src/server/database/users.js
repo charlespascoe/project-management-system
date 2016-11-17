@@ -10,9 +10,9 @@ export class Users {
     this.roles = roles;
   }
 
-  async getAllUsers() {
+  async getAllUsers(includeInactive) {
     var query =
-      'SELECT * FROM `user`;';
+      `SELECT * FROM \`user\`${includeInactive ? '' : ' WHERE `active` = TRUE'};`;
 
     var results = await this.database.query(query);
 
