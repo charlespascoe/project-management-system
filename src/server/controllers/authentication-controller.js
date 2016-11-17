@@ -123,7 +123,7 @@ export class AuthenticationController {
 
   async elevateUser(result, user, base64Pass) {
     if (!validate(base64Pass).isBase64().isValid()) {
-      this.loggers.security.debug(user, 'Missing or invalid \'X-Additional-Auth\' header when requesting elevation');
+      this.loggers.security.debug({user: user}, 'Missing or invalid \'X-Additional-Auth\' header when requesting elevation');
       result.delay().status(httpStatuses.BAD_REQUEST).data({
         msg: 'Missing or invalid \'X-Additional-Auth\' header'
       });
@@ -140,6 +140,8 @@ export class AuthenticationController {
       return;
     }
 
+    this.loggers.security.info({user: user}, `User has been granted Sysadmin priviledges (expires ${user.requestToken.sysadminElevationExpires})`);
+
     result.data({
       expires: user.requestToken.sysadminElevationExpires
     });
@@ -153,6 +155,8 @@ export class AuthenticationController {
 
     user.requestToken.sysadminElevationExpires = null;
     await user.requestToken.save();
+
+    this.loggers.security.info({user: user}, 'User has dropped Sysadmin priviledges');
 
     result.status(httpStatuses.NO_CONTENT);
   }
