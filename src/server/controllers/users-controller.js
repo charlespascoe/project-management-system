@@ -38,6 +38,11 @@ export class UsersController {
 
     var userId = await this.users.addUser(data);
 
+    if (userId == null) {
+      result.status(httpStatuses.CONFLICT);
+      return;
+    }
+
     result.status(httpStatuses.CREATED).data({
       id: userId
     });
