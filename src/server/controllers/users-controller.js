@@ -115,13 +115,13 @@ export class UsersController {
     var otherUser;
 
     if (typeof idOrEmail == 'number') {
-      otherUser = this.users.getUserById(idOrEmail);
+      otherUser = await this.users.getUserById(idOrEmail);
     } else if (typeof idOrEmail == 'string') {
-      otherUser = this.users.getUserByEmail(idOrEmail);
+      otherUser = await this.users.getUserByEmail(idOrEmail);
     }
 
     if (!otherUser) {
-      this.loggers.main.warn({user: user}, `Non-existent user (User ID or email: ${idOrEmail}`);
+      this.loggers.main.warn({user: user}, `Non-existent user (User ID or email: ${idOrEmail})`);
       result.delay().status(httpStatuses.NOT_FOUND);
       return;
     }
