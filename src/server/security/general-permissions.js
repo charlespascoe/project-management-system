@@ -4,6 +4,9 @@ const generalPermissions = {
   },
   ADD_USER: {
     sysadmin: true
+  },
+  DELETE_USER: {
+    sysadmin: true
   }
 };
 
