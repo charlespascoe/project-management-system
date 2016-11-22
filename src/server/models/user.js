@@ -1,8 +1,18 @@
 import Model from 'server/models/model';
 import Schema from 'server/models/schema';
 import validate from 'server/validation';
+import moment from 'moment';
 
 export default class User extends Model {
+  get isSysadminElevated() {
+    return (
+      this.sysadmin &&
+      this.requestToken.sysadminElevationExpires &&
+      moment().isBefore(this.requestToken.sysadminElevationExpires)
+    );
+  }
+
+
   get active() { return this.email != null; }
 
   constructor(database, data, authTokens, projectAssignments) {
