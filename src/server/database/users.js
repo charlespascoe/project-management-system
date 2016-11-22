@@ -12,7 +12,7 @@ export class Users {
 
   async getAllUsers(includeInactive) {
     var query =
-      `SELECT * FROM \`user\`${includeInactive ? '' : ' WHERE `active` = TRUE'};`;
+      `SELECT * FROM \`user\`${includeInactive ? '' : ' WHERE `email` IS NOT NULL'} ORDER BY \`user_id\`;`;
 
     var results = await this.database.query(query);
 

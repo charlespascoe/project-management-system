@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.14.1
+# Version: 0.14.2
 
 # Drop the existing database (this is a create script, not an update script!)
 DROP DATABASE IF EXISTS `proj_mgr`;
@@ -23,7 +23,6 @@ CREATE TABLE `user` (
     `first_name` varchar(64) NOT NULL,
     `other_names` varchar(128) NOT NULL,
     `pass_hash` varchar(256) DEFAULT NULL,
-    `active` bool NOT NULL DEFAULT TRUE,
     `sysadmin` bool NOT NULL DEFAULT FALSE,
 
     PRIMARY KEY (`user_id`)

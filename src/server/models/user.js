@@ -3,6 +3,8 @@ import Schema from 'server/models/schema';
 import validate from 'server/validation';
 
 export default class User extends Model {
+  get active() { return this.email != null; }
+
   constructor(database, data, authTokens, projectAssignments) {
     super(database, 'user', data, User.schema);
 
@@ -27,7 +29,7 @@ export default class User extends Model {
   }
 
   async delete() {
-    this.active = false;
+    this.email = null;
     await this.save();
   }
 }
@@ -53,9 +55,6 @@ User.schema = new Schema({
   },
   passHash: {
     column: 'pass_hash'
-  },
-  active: {
-    column: 'active'
   },
   sysadmin: {
     column: 'sysadmin',
