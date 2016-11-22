@@ -38,6 +38,10 @@ export default class User extends Model {
     return data;
   }
 
+  getRoleInProject(projectId) {
+    return this.projectAssignments.find(assignment => assignment.projectId === projectId);
+  }
+
   async delete() {
     this.email = null;
     await this.save();
