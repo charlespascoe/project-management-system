@@ -28,12 +28,12 @@ Model
   * Database
   * Schema
 
-AuthenticationToken (Extends Model)
+AuthenticationTokenPair (Extends Model)
 -----------------------------------
 * Knows
   * The access token hash and its expiry
   * The refresh token hash and its expiry
-  * When this session's super-user priviledges expire
+  * When this session's system administrator priviledges expire
 * Collaborators
   * Database
   * Schema
@@ -45,18 +45,13 @@ User (Extends Model)
   * Names
   * Password Hash
   * User's authentication tokens
+  * Whether or not the user is a System Administrator
+  * The projects the user is assigned to
 * Does
   * Saves an authentication token to the database
+  * Deactive the user
 * Collaborators
-  * Database
-  * Schema
-
-Permission (Extends Model)
---------------------------
-* Knows
-  * Permission Key (for reference throughout the server)
-  * Description
-* Collaborators
+  * AuthenticationToken
   * Database
   * Schema
 
@@ -64,28 +59,36 @@ Role (Extends Model)
 --------------------
 * Knows
   * Role Name
+  * Permissions (application-defined string constants) that this role has
 * Collaborators
   * Database
   * Schema
 
-Assignment (Extends Model)
+ProjectAssignment (Extends Model)
 --------------------------
 * Knows
   * The user
   * The project
   * The role the user has in that project
 * Collaborators
+  * User
+  * Project
+  * Role
   * Database
   * Schema
 
 Project (Extends Model)
 -----------------------
 * Knows
+  * Project ID
   * Project Name
-  * The project's tasks
-  * The users assigned to the projet
+  * Project Icon URL
 * Does
+  * Adds a task to the project
   * Loads project tasks from the database
+  * Add a user as a project member
+  * Loads assigned project members from the database
+  * Removes a project member
 * Collaborators
   * Database
   * Schema
@@ -101,7 +104,7 @@ Transaction
   * Transaction ID
 * Does
   * Queries the database
-  * Commits/rolls back the database
+  * Commits/rolls back the changes made to the database
 
 Database
 --------
@@ -118,18 +121,11 @@ Users
 * Does
   * Gets a user by email or ID from database
   * Adds a user to the database
+  * Adds an authentication token pair to the database
 * Collaborators
   * Database
   * User
   * AuthenticationToken
-
-AuthenticationTokens
---------------------
-* Does
-  * Adds an authentication token pair to the database
-* Collaborators
-  * Database
-  * AuthenticationTokenPair
 
 Projects
 --------
@@ -156,6 +152,7 @@ Authenticator
   * Authenticates refresh requests
   * Generates authentication token pairs
 * Collaborators
+  * Users
   * User
   * PasswordHasher
 
@@ -166,7 +163,6 @@ Authorisor
 * Collaborators
   * User
   * Role
-  * Permission
 
 Controller Classes
 ==================
@@ -191,6 +187,7 @@ UsersController
   * Handles requests to delete a user
 * Collaborators
   * Authorisor
+  * Users
 
 ProjectsController
 ------------------
@@ -199,6 +196,19 @@ ProjectsController
   * Handles requests to get all projects
   * Handles requests to edit a project's details
 * Collaborators
+  * Authorisor
+
+MembersController
+-----------------
+* Does
+  * Handles requests to get all project members
+  * Handles requests to add users to a project
+  * Handles requests to update a user's role in a project
+  * Handles requests to remove a user from a project
+* Collaborators
+  * Projects
+  * Project
+  * User
   * Authorisor
 
 TasksController
