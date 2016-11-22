@@ -7,6 +7,12 @@ const generalPermissions = {
   },
   DELETE_USER: {
     sysadmin: true
+  },
+  GET_ALL_PROJECTS: {
+    sysadmin: true
+  },
+  CREATE_PROJECT: {
+    sysadmin: true
   }
 };
 

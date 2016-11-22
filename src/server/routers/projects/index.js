@@ -16,12 +16,12 @@ var router = new Router();
 
 router.route('/')
   .get(catchHandler(async function (req, res) {
-    var result = await projectsController.getProjects(res.result, req.user);
-    await result.end();
+    await projectsController.getProjects(res.result, req.user);
+    await res.result.end();
   }))
   .post(catchHandler(async function (req, res) {
-    var result = await projectsController.createProject(res.result, req.user, req.body || {});
-    await result.end();
+    await projectsController.createProject(res.result, req.user, req.body || {});
+    await res.result.end();
   }));
 
 router.param('projectId', function (req, res, next) {
