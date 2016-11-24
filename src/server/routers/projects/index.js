@@ -5,7 +5,7 @@ import loggers from 'server/loggers';
 import membersRouter from 'server/routers/projects/members';
 import projectsController from 'server/controllers/projects-controller';
 import tasksRouter from 'server/routers/projects/tasks';
-import validate from 'server/validation';
+import Project from 'server/models/project';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.main.error({err: err});
@@ -25,12 +25,13 @@ router.route('/')
   }));
 
 router.param('projectId', function (req, res, next) {
-  if (!validate(req.params.projectId).matches(/^\d+$/).isValid()) {
+  if (!Project.schema.id.validate(req.params.projectId)) {
+    loggers.main.debug({ip: req.ip}, `Invalid project ID: ${req.params.projectId}`);
     res.result.delay().status(httpStatuses.BAD_REQUEST).end();
     return;
   }
 
-  req.params.projectId = parseInt(req.params.projectId);
+  req.projectId = req.params.projectId
 
   next();
 });
