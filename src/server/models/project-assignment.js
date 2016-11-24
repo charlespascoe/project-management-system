@@ -1,17 +1,48 @@
 import Model from 'server/models/model';
 import Schema from 'server/models/schema';
 import validate from 'server/validation';
+import database from 'server/database/database';
 
-export class ProjectAssignment extends Model {
+export default class ProjectAssignment extends Model {
   // roles should be instance of the class defined in server/database/roles
-  constructor(database, data, roles) {
+  constructor(database, data, user = null, role = null, project = null) {
     super(database, 'project_assignment', data, ProjectAssignment.schema);
-    this._roles = roles;
+    this.user = user;
+    this.role = role;
+    this.project = project;
   }
 
-  async getRole() {
-    this.role = await this._roles.getRoleById(this.roleId);
-    return this.role;
+  static create(data, user = null, role = null, project = null) {
+    return new ProjectAssignment(database, data, user, role, project);
+  }
+
+  serialise() {
+    var data = {
+      project: {
+        id: this.projectId
+      },
+      user: {
+        id: this.userId
+      },
+      role: {
+        id: this.roleId
+      }
+    };
+
+    if (this.user) {
+      data.user.firstName = this.user.firstName;
+      data.user.otherNames = this.user.otherNames;
+    }
+
+    if (this.role) {
+      data.role.name = this.role.name;
+    }
+
+    if (this.project) {
+      data.project.name = this.project.name;
+    }
+
+    return data;
   }
 }
 
