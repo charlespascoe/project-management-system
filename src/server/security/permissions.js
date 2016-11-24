@@ -1,9 +1,12 @@
-const permissions = [
-  'GET_OTHER_USER_DETAILS'
-].reduce((obj, permKey) => {
-  obj[permKey] = permKey;
-  return obj;
-});
+const permissions = {
+  MANAGE_PROJECT_MEMBERS: {
+    sysadminOverride: true
+  }
+};
+
+for (var id in permissions) {
+  permissions[id].id = id;
+}
 
 export default new Proxy(permissions, {
   get: (permissions, permKey) => {
