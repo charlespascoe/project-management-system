@@ -5,6 +5,7 @@ import Project from 'server/models/project';
 import authorisor from 'server/security/authorisor';
 import generalPermissions from 'server/security/general-permissions';
 import httpStatuses from 'http-status-codes';
+import permissions from 'server/security/permissions';
 
 export class ProjectsController {
   constructor(loggers, projects, authorisor) {
@@ -56,6 +57,27 @@ export class ProjectsController {
     return result.status(httpStatuses.CREATED);
   }
 
+  async getNonMembers(result, user, projectId) {
+    var hasPermission = await this.authorisor.hasProjectPermission(user, projectId, permissions.MANAGE_PROJECT_MEMBERS);
+
+    if (!hasPermission) {
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to get project non-members (Project ID: ${projectId})`);
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    var project = await this.projects.getProject(projectId);
+
+    if (project == null) {
+      this.loggers.main.info({user: user}, `Get non-members - Project not found: ${projectId}`);
+      result.delay().status(httpStatuses.NOT_FOUND);
+      return;
+    }
+
+    var nonMembers = await project.getNonMembers();
+
+    result.data(nonMembers.map(user => user.serialise()));
+  }
 }
 
 export default new ProjectsController(loggers.forClass('ProjectsController'), projects, authorisor);

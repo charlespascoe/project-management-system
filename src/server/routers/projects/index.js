@@ -44,6 +44,11 @@ router.route('/:projectId')
     // Update details about a project
   }));
 
+router.get('/:projectId/non-members', catchHandler(async function (req, res) {
+  await projectsController.getNonMembers(res.result, req.user, req.projectId);
+  await res.result.end();
+}));
+
 router.use('/:projectId/members', membersRouter);
 router.use('/:projectId/tasks', tasksRouter);
 
