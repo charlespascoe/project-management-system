@@ -2,6 +2,7 @@ import { Router } from 'express';
 import catchAsync from 'server/catch-async';
 import httpStatuses from 'http-status-codes';
 import loggers from 'server/loggers';
+import membersController from 'server/controllers/members-controller';
 
 const catchHandler = catchAsync(function (err, req, res) {
   loggers.main.error({err: err});
@@ -12,7 +13,8 @@ var router = new Router();
 
 router.route('/')
   .get(catchHandler(async function (req, res) {
-    // List all members
+    await membersController.getMembers(res.result, req.user, req.projectId);
+    await res.result.end();
   }))
   .post(catchHandler(async function (req, res) {
     // Add a member, or update their role
