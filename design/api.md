@@ -55,6 +55,9 @@ All other requests require a valid access token to succeed
     * Permission: `MANAGE_MEMBERS` or Sysadmin
   * DELETE - Removes a member from the project
     * Permission: `MANAGE_MEMBERS` or Sysadmin
+* /projects/{Project ID}/non-members
+  * GET - Gets a list of all users who are not in the current project
+    * Permission: `MANAGE_MEMBERS` or Sysadmin
 * /projects/{Project ID}/tasks
   * GET - Returns a list of all tasks in the project
     * Permission: Project Member
