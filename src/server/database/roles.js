@@ -1,4 +1,3 @@
-import Permission from 'server/models/permission';
 
 export class Roles {
   constructor(database) {
@@ -18,8 +17,10 @@ export class Roles {
     if (results[0].length == 0) return null;
 
     var permissions = results[1]
-      .map(row => new Permission(this.database, row));
+      .map(row => row.permission_id);
 
     return new Role(this.database, results[0][0], permissions);
   }
 }
+
+export default new Roles(database);
