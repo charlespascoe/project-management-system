@@ -1,4 +1,5 @@
 import Model from 'server/models/model';
+import database from 'server/database/database';
 import Schema from 'server/models/schema';
 import validate from 'server/validation';
 import moment from 'moment';
@@ -12,7 +13,6 @@ export default class User extends Model {
     );
   }
 
-
   get active() { return this.email != null; }
 
   constructor(database, data, authTokens, projectAssignments) {
@@ -20,6 +20,10 @@ export default class User extends Model {
 
     this.authTokens = authTokens;
     this.projectAssignments = projectAssignments;
+  }
+
+  static create(data, authTokens = null, projectAssignments = null) {
+    return new User(database, data, authTokens, projectAssignments);
   }
 
   serialise() {
