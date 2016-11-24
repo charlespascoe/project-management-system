@@ -16,6 +16,17 @@ export class Projects {
     return results.map(row => new Project(this.database, row));
   }
 
+  async getProject(projectId) {
+    var query =
+      'SELECT * FROM `project` WHERE `project`.`project_id` = :projectId;';
+
+    var result = await this.database.queryForOne(query, {projectId: projectId});
+
+    if (result == null) return null;
+
+    return new Project(this.database, result);
+  }
+
   async createProject(data) {
     var columnData = Project.schema.mapPropertiesToColumns(data);
     console.log(columnData);
