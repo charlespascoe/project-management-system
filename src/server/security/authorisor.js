@@ -12,14 +12,16 @@ export class Authorisor {
     return false;
   }
 
-  async hasProjectPermission(user, projectId, permKey) {
+  async hasProjectPermission(user, projectId, permission) {
+    if (user.isSysadminElevated && permission.sysadminOverride) return true;
+
     var projAssignment = await user.projectAssignments.find(pa => pa.projectId === projectId);
 
     if (!projAssignment) return false;
 
     var role = await projAssignment.getRole();
 
-    if (!role.hasPermission(permKey)) return false;
+    if (!role.hasPermission(permission.id)) return false;
 
     return true;
   }
