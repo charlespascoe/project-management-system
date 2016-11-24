@@ -3,6 +3,7 @@ import AuthenticationTokenPair from 'server/models/authentication-token-pair';
 import SqlUtils from 'server/database/sql-utils';
 import database from 'server/database/database';
 import roles from 'server/database/roles';
+import ProjectAssignment from 'server/models/project-assignment';
 
 export class Users {
   constructor(database, roles) {
@@ -44,7 +45,7 @@ export class Users {
     if (userResult == null) return null;
 
     var authTokens = authTokensResult.map(row => new AuthenticationTokenPair(this.database, row));
-    var assignments = assignmentResult.map(row => new ProjectAssignment(this.database, row, this.roles));
+    var assignments = assignmentResult.map(row => new ProjectAssignment(this.database, row));
 
     return new User(this.database, userResult, authTokens, assignments);
   }
