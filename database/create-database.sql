@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.14.2
+# Version: 0.14.3
 
 # Drop the existing database (this is a create script, not an update script!)
 DROP DATABASE IF EXISTS `proj_mgr`;
@@ -49,6 +49,7 @@ CREATE TABLE `authentication_token_pair` (
 CREATE TABLE `project` (
     `project_id` varchar(16) NOT NULL UNIQUE,
     `project_name` varchar(64) NOT NULL,
+    `icon_url` varchar(256) NOT NULL,
     `completed` bool NOT NULL DEFAULT FALSE,
 
     PRIMARY KEY (`project_id`)
@@ -113,7 +114,6 @@ CREATE TABLE `task` (
     `task_desc` mediumtext NOT NULL,
     `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `target_completion` date,
-    `complexity` int(2) NOT NULL,
     `completed` timestamp NULL DEFAULT NULL,
     `priority` tinyint(1) NOT NULL DEFAULT 4,
     `est_effort` int(6) NOT NULL DEFAULT 0,
