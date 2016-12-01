@@ -17,7 +17,8 @@ router.route('/')
     await res.result.end();
   }))
   .post(catchHandler(async function (req, res) {
-    // Add a member, or update their role
+    await membersController.addMember(res.result, req.user, req.projectId, req.body);
+    await res.result.end();
   }));
 
 router.param('userId', function (req, res, next) {
