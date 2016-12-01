@@ -48,6 +48,22 @@ export default class Project extends Model {
     return users;
   }
 
+  async addMember(userId, roleId) {
+    var query =
+      'INSERT INTO `project_assignment` ' +
+        'SET `project_id` = :projectId, `user_id` = :userId, `role_id` = :roleId;';
+
+    try {
+      await this._database.query(query, {projectId: this.id, userId: userId, roleId: roleId});
+    } catch (e) {
+      if (e.code == 'ER_DUP_ENTRY') return 'DUPLICATE';
+      if (e.code == 'ER_NO_REFERENCED_ROW_2') return 'NOT_FOUND';
+      throw e;
+    }
+
+    return null;
+  }
+
   serialise() {
     return {
       id: this.id,
