@@ -16,6 +16,17 @@ export default class Role extends Model {
   hasPermission(permKey) {
     return this.permissions.find(p => p.key === permKey) != null;
   }
+
+  serialise() {
+    var data = {
+      id: this.id,
+      name: this.name
+    };
+
+    if (this.permissions) data.permissions = this.permissions;
+
+    return data;
+  }
 }
 
 Role.schema = new Schema({
