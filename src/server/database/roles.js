@@ -1,7 +1,18 @@
+import database from 'server/database/database';
+import Role from 'server/models/role';
 
 export class Roles {
   constructor(database) {
     this.database = database;
+  }
+
+  async getRoles() {
+    var query =
+      'SELECT * FROM `role`';
+
+    var results = await this.database.query(query);
+
+    return results.map(row => new Role(this.database, row));
   }
 
   async getRoleById(roleId) {
