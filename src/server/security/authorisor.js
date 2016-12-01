@@ -15,7 +15,7 @@ export class Authorisor {
   async hasProjectPermission(user, projectId, permission) {
     if (user.isSysadminElevated && permission.sysadminOverride) return true;
 
-    var projAssignment = await user.projectAssignments.find(pa => pa.projectId === projectId);
+    var projAssignment = user.projectAssignments.find(pa => pa.projectId === projectId);
 
     if (!projAssignment) return false;
 

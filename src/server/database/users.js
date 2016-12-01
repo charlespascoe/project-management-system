@@ -45,7 +45,7 @@ export class Users {
     if (userResult == null) return null;
 
     var authTokens = authTokensResult.map(row => new AuthenticationTokenPair(this.database, row));
-    var assignments = assignmentResult.map(row => new ProjectAssignment(this.database, row));
+    var assignments = assignmentResult.map(row => ProjectAssignment.create(row));
 
     return new User(this.database, userResult, authTokens, assignments);
   }
