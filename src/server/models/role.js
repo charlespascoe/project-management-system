@@ -32,10 +32,11 @@ export default class Role extends Model {
 Role.schema = new Schema({
   id: {
     column: 'role_id',
-    id: true
+    id: true,
+    validate: val => validate(val).isString().matches(/^\d{1,11}$/).isValid() || validate(val).isNumber().min(1).max(99999999999).isValid()
   },
   name: {
     column: 'role_name',
-    validate: (val) => validate(val).isString().minLength(1).maxLength(64).isValid()
+    validate: val => validate(val).isString().minLength(1).maxLength(64).isValid()
   }
 });
