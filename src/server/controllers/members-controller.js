@@ -14,7 +14,7 @@ export class MembersController {
     var userRole = user.getRoleInProject(projectId);
 
     // Get members only requires membership to the project or sysadmin privileges
-    if (userRole == null && user.isSysadminElevated) {
+    if (userRole == null && !user.isSysadminElevated) {
       this.loggers.security.warn({user: user}, `Unauthorised attempt to get project members (Project ID: ${projectId})`);
       result.delay().status(httpStatuses.FORBIDDEN);
       return;
