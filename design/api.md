@@ -83,4 +83,7 @@ All other requests require a valid access token to succeed
     * Permission:
       * The assigned user with the `DELETE_WORK_LOG` permission
       * Any user with the `DELETE_ANY_WORK_LOG` permission
+* /roles
+  * GET - Returns the list of roles each user can have
+  * (Routes that create/update/delete roles would be here)
 
