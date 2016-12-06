@@ -1,5 +1,7 @@
 import loggers from 'server/loggers';
 import projects from 'server/database/projects';
+import users from 'server/database/users';
+import roles from 'server/database/roles';
 import httpStatuses from 'http-status-codes';
 import permissions from 'server/security/permissions';
 import authorisor from 'server/security/authorisor';
@@ -7,13 +9,22 @@ import Role from 'server/models/role';
 import User from 'server/models/user';
 
 export class MembersController {
-  constructor(loggers, projects, authorisor) {
+  constructor(loggers, projects, users, roles, authorisor) {
     this.loggers = loggers;
     this.projects = projects;
+    this.roles = roles;
+    this.users = users;
     this.authorisor = authorisor;
   }
 
   async getMembers(result, user, projectId) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        projectId: projectId
+      }
+    }, 'getMembers called');
     // This method assumes projectId has been validated by middleware
 
     var userRole = user.getRoleInProject(projectId);
@@ -69,6 +80,14 @@ export class MembersController {
 
     var userId = parseInt(data.userId);
 
+    var authorised = await this.authorisor.hasProjectPermission(user, projectId, permissions.MANAGE_PROJECT_MEMBERS);
+
+    if (!authorised) {
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to add a project member (Project ID: ${projectId}, User ID: ${userId})`);
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
     var project = await this.projects.getProject(projectId);
 
     if (project == null) {
@@ -101,6 +120,105 @@ export class MembersController {
 
     result.status(httpStatuses.NO_CONTENT);
   }
+
+  async updateMember(result, user, projectId, userId, data) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        projectId: projectId,
+        userId: userId,
+        data: data
+      }
+    }, 'updateMember called');
+    // Both projectId and userId will have been validated by this point
+
+    if (typeof data != 'object') {
+      this.loggers.main.debug({user: user}, `Update Member - Invalid data type: ${typeof data}`);
+      result.delay().status(httpStatuses.BAD_REQUEST);
+      return;
+    }
+
+    if (!Role.schema.id.validate(data.roleId)) {
+      this.loggers.main.debug({user: user}, `Update Member - Invalid Role ID: ${data.roleId}`);
+      result.delay().status(httpStatuses.BAD_REQUEST);
+      return;
+    }
+
+    var roleId = parseInt(data.roleId);
+
+    var authorised = await this.authorisor.hasProjectPermission(user, projectId, permissions.MANAGE_PROJECT_MEMBERS);
+
+    if (!authorised) {
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to update a project member (Project ID: ${projectId}, User ID: ${userId})`);
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    var otherUser = await this.users.getUserById(userId);
+    var projectAssignment = null;
+
+    if (otherUser != null) projectAssignment = otherUser.getRoleInProject(projectId);
+
+    if (projectAssignment == null) {
+      this.loggers.main.warn({user: user}, `Update Member - User not found or not a member (User ID: ${userId})`);
+      result.delay().status(httpStatuses.NOT_FOUND);
+      return;
+    }
+
+    var role = await this.roles.getRoleById(roleId);
+
+    if (role == null) {
+      this.loggers.main.warn({user: user}, `Update Member - Role not found (Role ID: ${roleId})`);
+      result.delay().status(httpStatuses.BAD_REQUEST);
+      return;
+    }
+
+    projectAssignment.roleId = roleId;
+    await projectAssignment.save();
+
+    this.loggers.main.info({user: user}, `Updated user ${userId} role to ${roleId} in project ${projectId}`);
+
+    result.status(httpStatuses.NO_CONTENT);
+  }
+
+  async removeMember(result, user, projectId, userId) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        projectId: projectId,
+        userId: userId
+      }
+    }, 'removeMember called');
+
+    // Both projectId and userId will have been validated by this point
+
+    var authorised = await this.authorisor.hasProjectPermission(user, projectId, permissions.MANAGE_PROJECT_MEMBERS);
+
+    if (!authorised) {
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to remove a project member (Project ID: ${projectId}, User ID: ${userId})`);
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    var otherUser = await this.users.getUserById(userId);
+    var projectAssignment = null;
+
+    if (user != null) projectAssignment = otherUser.getRoleInProject(projectId);
+
+    if (projectAssignment == null) {
+      this.loggers.main.warn({user: user}, `Remove Member - User not found or not a member (User ID: ${userId})`);
+      result.delay().status(httpStatuses.NOT_FOUND);
+      return;
+    }
+
+    await projectAssignment.delete();
+
+    this.loggers.main.info({user: user}, `Removed user ${userId} from project ${projectId}`);
+
+    result.status(httpStatuses.NO_CONTENT);
+  }
 }
 
-export default new MembersController(loggers.forClass('MembersController'), projects, authorisor);
+export default new MembersController(loggers.forClass('MembersController'), projects, users, roles, authorisor);
