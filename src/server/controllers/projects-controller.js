@@ -26,6 +26,14 @@ export class ProjectsController {
   }
 
   async createProject(result, user, data) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        data: data
+      }
+    }, 'createProject called');
+
     if (!this.authorisor.hasGeneralPermission(user, generalPermissions.CREATE_PROJECT)) {
       this.loggers.security.warn({user: user}, 'Unauthorised attempt to create a project');
       result.delay().status(httpStatuses.FORBIDDEN);
@@ -34,7 +42,8 @@ export class ProjectsController {
 
     data = {
       id: data.id,
-      name: data.name
+      name: data.name,
+      iconUrl: data.iconUrl
     };
 
     var invalidItem = Project.schema.invalid(data);
@@ -47,14 +56,14 @@ export class ProjectsController {
       return;
     }
 
-    var idExists = await this.projects.createProject({
-      id: data.id,
-      name: data.name
-    });
+    var idExists = await this.projects.createProject(data);
 
-    if (idExists) return result.status(httpStatuses.CONFLICT)
+    if (idExists) {
+      result.status(httpStatuses.CONFLICT);
+      return;
+    }
 
-    return result.status(httpStatuses.CREATED);
+    result.status(httpStatuses.CREATED);
   }
 }
 

@@ -69,8 +69,9 @@ export default class Project extends Model {
   serialise() {
     return {
       id: this.id,
-      name: this.name
-    }
+      name: this.name,
+      iconUrl: this.iconUrl
+    };
   }
 }
 
@@ -83,5 +84,9 @@ Project.schema = new Schema({
   name: {
     column: 'project_name',
     validate: (val) => validate(val).isString().minLength(1).maxLength(64).isValid()
+  },
+  iconUrl: {
+    column: 'icon_url',
+    validate: (val) => validate(val).isString().isURL().minLength(1).maxLength(256).isValid()
   }
 });
