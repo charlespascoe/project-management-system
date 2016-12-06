@@ -35,7 +35,7 @@ export default class Project extends Model {
 
   async getNonMembers() {
     var query =
-      'SELECT `user`.`active`, `user`.`user_id`, `user`.`first_name`, `user`.`other_names` FROM `user` ' +
+      'SELECT `user`.`user_id`, `user`.`first_name`, `user`.`other_names` FROM `user` ' +
       'WHERE `user`.`email` IS NOT NULL ' +
         'AND `user`.`user_id` NOT IN (' +
           'SELECT `project_assignment`.`user_id` FROM `project_assignment` ' +
