@@ -135,6 +135,48 @@ export class UsersController {
 
     result.data(otherUser.serialise());
   }
+
+  async getUserAssignments(result, user, idOrEmail) {
+    // Note: this method assumes that idOrEmail has already be validated and converted to a number (if it's an ID)
+
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        idOrEmail: idOrEmail
+      }
+    }, 'getUserAssignments called');
+
+    if (typeof idOrEmail == 'string') idOrEmail = idOrEmail.toLowerCase();
+
+    if (idOrEmail !== user.id &&
+        idOrEmail !== user.email.toLowerCase() &&
+        !this.authorisor.hasGeneralPermission(user, generalPermissions.GET_OTHER_USER_DETAILS)) {
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to get another user's assignments (User ID or email: ${idOrEmail})`);
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    var otherUser;
+
+    if (idOrEmail === user.id || idOrEmail === user.email.toLowerCase()) {
+      otherUser = user;
+    } else if (typeof idOrEmail == 'number') {
+      otherUser = await this.users.getUserById(idOrEmail);
+    } else if (typeof idOrEmail == 'string') {
+      otherUser = await this.users.getUserByEmail(idOrEmail);
+    }
+
+    if (!otherUser) {
+      this.loggers.main.debug({user: user}, `Get User Assignments - User not found (User ID or email: ${idOrEmail})`);
+      result.status(httpStatuses.NOT_FOUND);
+      return;
+    }
+
+    var projAssignments = await otherUser.getProjectAssignments();
+
+    result.data(projAssignments.map(pa => pa.serialise()));
+  }
 }
 
 export default new UsersController(loggers.forClass('UsersController'), authorisor, users);
