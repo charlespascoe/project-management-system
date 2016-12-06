@@ -35,11 +35,13 @@ export default class Project extends Model {
 
   async getNonMembers() {
     var query =
-      'SELECT `user`.`user_id`, `user`.`first_name`, `user`.`other_names` FROM `user` ' +
-      'LEFT JOIN `project_assignment` ' +
-        'ON `project_assignment`.`user_id` = `user`.`user_id` ' +
-      'WHERE `user`.`email` IS NOT NULL AND ' +
-        '(`project_assignment`.`project_id` != :projectId OR `project_assignment`.`project_id` IS NULL);';
+      'SELECT `user`.`active`, `user`.`user_id`, `user`.`first_name`, `user`.`other_names` FROM `user` ' +
+      'WHERE `user`.`email` IS NOT NULL ' +
+        'AND `user`.`user_id` NOT IN (' +
+          'SELECT `project_assignment`.`user_id` FROM `project_assignment` ' +
+          'WHERE `project_assignment`.`project_id` = :projectId' +
+        ') ' +
+      'ORDER BY `user`.`user_id`;';
 
     var results = await this._database.query(query, {projectId: this.id});
 
