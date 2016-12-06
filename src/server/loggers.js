@@ -13,7 +13,22 @@ var commonConfig = {
         tokId: user.requestToken && user.requestToken.id
       };
     },
-    ip: (ip) => ip.match(/^::ffff:/) ? ip.substring(7) : ip
+    ip: (ip) => ip.match(/^::ffff:/) ? ip.substring(7) : ip,
+    args: (args) => {
+      if (args.result) {
+        args.result = {
+          statusCode: args.result.statusCode,
+          cookies: args.result.cookies,
+          clearCookies: args.result.clearCookies,
+          timeout: args.result.timeout,
+          startedAt: args.result.startedAt
+        };
+      }
+
+      if (args.user) args.user = commonConfig.serializers.user(args.user);
+
+      return args;
+    }
   },
   level: config.logging.level || bunyan.INFO,
   src: config.logging.src
