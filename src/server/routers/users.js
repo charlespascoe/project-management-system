@@ -24,26 +24,32 @@ router.route('/')
 
 router.param('userIdOrEmail', function (req, res, next) {
   if (User.schema.id.validate(req.params.userIdOrEmail)) {
-    req.params.userIdOrEmail = parseInt(req.params.userIdOrEmail);
+    req.userIdOrEmail = parseInt(req.params.userIdOrEmail);
     next();
     return;
   } else if (User.schema.email.validate(req.params.userIdOrEmail)) {
+    req.userIdOrEmail = req.params.userIdOrEmail;
     next();
     return;
   }
 
-  loggers.main.warn({user: req.user}, 'Invalid userIdOrEmail');
+  loggers.main.debug({user: req.user}, 'Invalid userIdOrEmail');
   res.result.delay().status(httpStatuses.BAD_REQUEST).end();
 });
 
 router.route('/:userIdOrEmail')
   .get(catchHandler(async function (req, res) {
-    await usersController.getUser(res.result, req.user, req.params.userIdOrEmail);
+    await usersController.getUser(res.result, req.user, req.userIdOrEmail);
     await res.result.end();
   }))
   .delete(catchHandler(async function (req, res) {
-    await usersController.deleteUser(res.result, req.user, req.params.userIdOrEmail);
+    await usersController.deleteUser(res.result, req.user, req.userIdOrEmail);
     await res.result.end();
   }));
+
+router.get('/:userIdOrEmail/assignments', catchHandler(async function (req, res) {
+  await usersController.getUserAssignments(res.result, req.user, req.userIdOrEmail);
+  await res.result.end();
+}));
 
 export default router;
