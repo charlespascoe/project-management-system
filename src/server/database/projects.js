@@ -9,7 +9,7 @@ export class Projects {
 
   async getAllProjects() {
     var query =
-      'SELECT * FROM `project`;';
+      'SELECT * FROM `project` ORDER BY `project_id`;';
 
     var results = await this.database.query(query);
 

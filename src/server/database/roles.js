@@ -8,7 +8,7 @@ export class Roles {
 
   async getRoles() {
     var query =
-      'SELECT * FROM `role`';
+      'SELECT * FROM `role` ORDER BY `role_id`;';
 
     var results = await this.database.query(query);
 
@@ -17,11 +17,11 @@ export class Roles {
 
   async getRoleById(roleId) {
     var query =
-      'SELECT * FROM `role` WHERE `role_id` = :role_id; ' +
+      'SELECT * FROM `role` WHERE `role_id` = :role_id ORDER BY `role_id`; ' +
       'SELECT * FROM `permission` ' +
         'INNER JOIN `role_permission` ' +
         'ON `role_permission`.`permission_id` = `permission`.`permission_id` '
-        'WHERE `role_permission`.`role_id` = :role_id;';
+      'WHERE `role_permission`.`role_id` = :role_id;';
 
     var results = await this.database.query(query, {role_id: roleId});
 
