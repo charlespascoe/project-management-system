@@ -14,7 +14,7 @@ export default class Transaction {
 
       return await this.conn.query(statement, data);
     } catch (e) {
-      if (e.code != 'ER_DUP_ENTRY') {
+      if (e.code != 'ER_DUP_ENTRY' && e.code != 'ER_NO_REFERENCED_ROW_2') {
         this.transactionLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query in a transaction');
         e.logged = true;
       }

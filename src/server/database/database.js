@@ -31,7 +31,7 @@ export class Database {
 
       return await this.pool.query(statement, data);
     } catch (e) {
-      if (e.code != 'ER_DUP_ENTRY') {
+      if (e.code != 'ER_DUP_ENTRY' && e.code != 'ER_NO_REFERENCED_ROW_2') {
         this.dbLogger.error({err: e, query: statement, data: data}, 'An error occurred when executing a query');
         e.logged = true;
       }
