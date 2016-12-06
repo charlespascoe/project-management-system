@@ -49,14 +49,46 @@ export class MembersController {
     result.data(members.map(assignment => assignment.serialise()));
   }
 
-  async addMember(result, user, projectId, data) {
+  async getNonMembers(result, user, projectId) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        projectId: projectId
+      }
+    }, 'getNonMembers called');
     var authorised = await this.authorisor.hasProjectPermission(user, projectId, permissions.MANAGE_PROJECT_MEMBERS);
 
     if (!authorised) {
-      this.loggers.security.warn({user: user}, `Unauthorised attempt to add a project member (Project ID: ${projectId}, User ID: ${userId}`);
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to get project non-members (Project ID: ${projectId})`);
       result.delay().status(httpStatuses.FORBIDDEN);
       return;
     }
+
+    var project = await this.projects.getProject(projectId);
+
+    if (project == null) {
+      this.loggers.main.warn({user: user}, `Get non-members - Project not found: ${projectId}`);
+      result.delay().status(httpStatuses.NOT_FOUND);
+      return;
+    }
+
+    var nonMembers = await project.getNonMembers();
+
+    console.log(nonMembers);
+
+    result.data(nonMembers.map(user => user.serialise()));
+  }
+
+  async addMember(result, user, projectId, data) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        projectId: projectId,
+        data: data
+      }
+    }, 'addMember called');
 
     if (typeof data != 'object') {
       this.loggers.main.debug({user: user}, `Add Member - Invalid data type: ${typeof data}`);

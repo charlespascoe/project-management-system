@@ -4,6 +4,7 @@ import httpStatuses from 'http-status-codes';
 import loggers from 'server/loggers';
 import membersRouter from 'server/routers/projects/members';
 import projectsController from 'server/controllers/projects-controller';
+import membersController from 'server/controllers/members-controller';
 import tasksRouter from 'server/routers/projects/tasks';
 import Project from 'server/models/project';
 
@@ -45,7 +46,7 @@ router.route('/:projectId')
   }));
 
 router.get('/:projectId/non-members', catchHandler(async function (req, res) {
-  await projectsController.getNonMembers(res.result, req.user, req.projectId);
+  await membersController.getNonMembers(res.result, req.user, req.projectId);
   await res.result.end();
 }));
 

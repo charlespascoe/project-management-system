@@ -56,28 +56,6 @@ export class ProjectsController {
 
     return result.status(httpStatuses.CREATED);
   }
-
-  async getNonMembers(result, user, projectId) {
-    var hasPermission = await this.authorisor.hasProjectPermission(user, projectId, permissions.MANAGE_PROJECT_MEMBERS);
-
-    if (!hasPermission) {
-      this.loggers.security.warn({user: user}, `Unauthorised attempt to get project non-members (Project ID: ${projectId})`);
-      result.delay().status(httpStatuses.FORBIDDEN);
-      return;
-    }
-
-    var project = await this.projects.getProject(projectId);
-
-    if (project == null) {
-      this.loggers.main.info({user: user}, `Get non-members - Project not found: ${projectId}`);
-      result.delay().status(httpStatuses.NOT_FOUND);
-      return;
-    }
-
-    var nonMembers = await project.getNonMembers();
-
-    result.data(nonMembers.map(user => user.serialise()));
-  }
 }
 
 export default new ProjectsController(loggers.forClass('ProjectsController'), projects, authorisor);
