@@ -1,4 +1,5 @@
 import Model from 'server/models/model';
+import ProjectAssignment from 'server/models/project-assignment';
 import database from 'server/database/database';
 import Schema from 'server/models/schema';
 import validate from 'server/validation';
@@ -40,6 +41,19 @@ export default class User extends Model {
     }
 
     return data;
+  }
+
+  async getProjectAssignments() {
+    if (this.projectAssignments) return this.projectAssignments;
+
+    var query =
+      'SELECT * FROM `project_assignment` WHERE `user_id` = :user_id ORDER BY `project_id`;';
+
+    var results = await this._database.query(query, {user_id: this.id});
+
+    this.projectAssignments = results.map(row => ProjectAssignment.create(row));
+
+    return this.projectAssignments;
   }
 
   getRoleInProject(projectId) {
