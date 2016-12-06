@@ -43,6 +43,13 @@ export class UsersController {
       return;
     }
 
+    // By this point, a set password token would be generated and sent to the user's email so that they can set their password.
+    // For now, their password defaults to 'pass1234' for the purpose of demonstration, because implementing the real functionality
+    // would take too long.
+    var newUser = await this.users.getUserById(userId);
+    newUser.passHash = '$argon2i$v=19$m=4096,t=3,p=1$q83vASNFZ4k$V7yt2zgip4VEyPZvAU02EerNEt5mbOFwEKiyxTHVkG0';
+    await newUser.save();
+
     result.status(httpStatuses.CREATED).data({
       id: userId
     });
