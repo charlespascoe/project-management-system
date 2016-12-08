@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.14.4
+# Version: 0.14.3
 
 # Drop the existing database (this is a create script, not an update script!)
 DROP DATABASE IF EXISTS `proj_mgr`;
@@ -65,7 +65,6 @@ CREATE TABLE `role` (
 CREATE TABLE `permission` (
     `permission_id` int(11) NOT NULL AUTO_INCREMENT,
     `permission_key` varchar(64) NOT NULL UNIQUE,
-    `description` varchar(256) NOT NULL,
 
     PRIMARY KEY (`permission_id`)
 );
