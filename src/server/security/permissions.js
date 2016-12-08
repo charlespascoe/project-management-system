@@ -1,6 +1,9 @@
 const permissions = {
   MANAGE_PROJECT_MEMBERS: {
     sysadminOverride: true
+  },
+  ADD_TASKS: {
+    sysadminOverride: true
   }
 };
 
