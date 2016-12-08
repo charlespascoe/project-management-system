@@ -1,13 +1,20 @@
 import Model from 'server/models/model';
+import database from 'server/database/database';
 import Schema from 'server/models/schema';
 import validate from 'server/validation';
 import User from 'server/models/user';
 import Role from 'server/models/role';
+import Task from 'server/models/task';
 import ProjectAssignment from 'server/models/project-assignment';
+import SqlUtils from 'server/database/sql-utils';
 
 export default class Project extends Model {
   constructor(database, data) {
     super(database, 'project', data, Project.schema);
+  }
+
+  static create(data) {
+    return new Project(database, data);
   }
 
   async getMembers() {
@@ -64,6 +71,27 @@ export default class Project extends Model {
     }
 
     return null;
+  }
+
+  async addTask(data) {
+    var columnData = Task.schema.mapPropertiesToColumns(data);
+
+    if (columnData == null) throw new Error('Invalid data provided to Project.addTask');
+
+    // TODO: Resolve this potential race condition
+    var result = await this._database.queryForOne('SELECT NEXT_TASK_ID(:project_id) AS `task_id`;', {project_id: columnData.project_id});
+
+    var task_id = result.task_id;
+    columnData.task_id = task_id;
+
+    var query =
+      'INSERT INTO `task` SET ' + SqlUtils.formatData(columnData) + ';';
+
+    var result = await this._database.query(query, columnData);
+
+    console.log(result);
+
+    return task_id;
   }
 
   serialise() {
