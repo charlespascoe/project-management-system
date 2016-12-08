@@ -40,6 +40,11 @@ export class ProjectsController {
       return;
     }
 
+    if (typeof data != 'object') {
+      result.delay().status(httpStatuses.BAD_REQUEST);
+      return;
+    }
+
     data = {
       id: data.id,
       name: data.name,
@@ -51,7 +56,7 @@ export class ProjectsController {
     if (invalidItem) {
       this.loggers.main.warn({user: user}, 'Invalid data when trying to create a project');
       result.delay().status(httpStatuses.BAD_REQUEST).data({
-        msg: `Mssing or invalid key: ${invalidItem}`
+        msg: `Missing or invalid key: ${invalidItem}`
       });
       return;
     }
