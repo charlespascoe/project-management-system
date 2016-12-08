@@ -1,5 +1,7 @@
 import Model from 'server/models/model';
 import ProjectAssignment from 'server/models/project-assignment';
+import Role from 'server/models/role';
+import Project from 'server/models/project';
 import database from 'server/database/database';
 import Schema from 'server/models/schema';
 import validate from 'server/validation';
@@ -44,14 +46,17 @@ export default class User extends Model {
   }
 
   async getProjectAssignments() {
-    if (this.projectAssignments) return this.projectAssignments;
-
     var query =
-      'SELECT * FROM `project_assignment` WHERE `user_id` = :user_id ORDER BY `project_id`;';
+      'SELECT `project_assignment`.`user_id`, `project`.*, `role`.* FROM `project_assignment` ' +
+      'INNER JOIN `role` ' +
+        'ON `role`.`role_id` = `project_assignment`.`role_id` ' +
+      'INNER JOIN `project` ' +
+        'ON `project`.`project_id` = `project_assignment`.`project_id` ' +
+      'WHERE `user_id` = :user_id ORDER BY `project_id`;';
 
     var results = await this._database.query(query, {user_id: this.id});
 
-    this.projectAssignments = results.map(row => ProjectAssignment.create(row));
+    this.projectAssignments = results.map(row => ProjectAssignment.create(row, null, Role.create(row), Project.create(row)));
 
     return this.projectAssignments;
   }
