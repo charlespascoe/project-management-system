@@ -1,5 +1,5 @@
 # Author: Charles Pascoe
-# Version: 0.14.3
+# Version: 0.14.4
 
 # Drop the existing database (this is a create script, not an update script!)
 DROP DATABASE IF EXISTS `proj_mgr`;
@@ -110,7 +110,7 @@ CREATE TABLE `task` (
     `project_id` varchar(16) NOT NULL,
     `task_id` int(11) NOT NULL,
     `task_summary` varchar(256) NOT NULL,
-    `task_desc` mediumtext NOT NULL,
+    `task_desc` text NOT NULL,
     `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `target_completion` date,
     `state` enum('OPEN', 'IN_PROGRESS', 'COMPLETED') DEFAULT 'OPEN',
