@@ -47,7 +47,7 @@ export default class ProjectAssignment extends Model {
     }
 
     if (this.project) {
-      data.project.name = this.project.name;
+      data.project = this.project.serialise();
     }
 
     return data;
