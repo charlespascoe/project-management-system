@@ -11,13 +11,12 @@ export class Roles {
       'SELECT * FROM `role` ORDER BY `role_id`; ' +
       'SELECT `permission`.*, `role_permission`.`role_id` FROM `permission` ' +
         'INNER JOIN `role_permission` ' +
-        'ON `role_permission`.`permission_id` = `permission`.`permission_id` '
-      'WHERE `role_permission`.`role_id` = :role_id;';
+        'ON `role_permission`.`permission_id` = `permission`.`permission_id`;';
 
     var results = await this.database.query(query);
 
     var permissions = results[1]
-      .reduce((row, perms) => {
+      .reduce((perms, row) => {
         if (!perms[row.role_id]) perms[row.role_id] = [];
         perms[row.role_id].push({id: row.permission_id, key: row.permission_key});
         return perms;
