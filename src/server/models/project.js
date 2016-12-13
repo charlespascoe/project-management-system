@@ -123,6 +123,15 @@ export default class Project extends Model {
     return task_id;
   }
 
+  async getTasks() {
+    var query =
+      'SELECT * FROM `task` WHERE `task`.`project_id` = :projectId;';
+
+    var results = await this._database.query(query, {projectId: this.id});
+
+    return results.map(row => Task.create(row, this));
+  }
+
   serialise() {
     return {
       id: this.id,
