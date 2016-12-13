@@ -21,7 +21,7 @@ export class Authorisor {
 
     var role = await projAssignment.getRole();
 
-    if (!role.hasPermission(permission.id)) return false;
+    if (!role.hasPermission(permission)) return false;
 
     return true;
   }

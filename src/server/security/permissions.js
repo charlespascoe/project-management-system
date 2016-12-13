@@ -4,11 +4,14 @@ const permissions = {
   },
   ADD_TASKS: {
     sysadminOverride: true
+  },
+  ASSIGNEE: {
+    sysadminOverride: false
   }
 };
 
-for (var id in permissions) {
-  permissions[id].id = id;
+for (var key in permissions) {
+  permissions[key].key = key;
 }
 
 export default new Proxy(permissions, {

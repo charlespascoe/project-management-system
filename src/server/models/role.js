@@ -13,8 +13,24 @@ export default class Role extends Model {
     return new Role(database, data, permissions);
   }
 
-  hasPermission(permKey) {
-    return this.permissions.find(p => p.key === permKey) != null;
+  async getPermissions() {
+    if (this.permissions) return this.permissions;
+
+    var query =
+      'SELECT * FROM `permission` ' +
+      'INNER JOIN `role_permission` ' +
+        'ON `role_permission`.`permission_id` = `permission`.`permission_id` ' +
+      'WHERE `role_permission`.`role_id` = :roleId;';
+
+    var results = await this._database.query(query, {roleId: this.id});
+
+    this.permissions = results.map(row => ({id: row.permission_id, key: row.permission_key}));
+
+    return this.permissions;
+  }
+
+  hasPermission(permission) {
+    return this.permissions.find(p => p.key === permission.key) != null;
   }
 
   serialise() {
