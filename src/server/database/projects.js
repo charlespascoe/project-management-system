@@ -29,7 +29,6 @@ export class Projects {
 
   async createProject(data) {
     var columnData = Project.schema.mapPropertiesToColumns(data);
-    console.log(columnData);
 
     if (columnData == null) throw new Error('Invalid data provided to Projects.addProject');
 

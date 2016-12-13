@@ -40,6 +40,35 @@ export default class Project extends Model {
     return assignments;
   }
 
+  async getMember(userId) {
+    var query =
+      'SELECT `role`.*, `user`.`user_id`, `user`.`first_name`, `user`.`other_names` FROM `user` ' +
+      'INNER JOIN `project_assignment` ' +
+        'ON `user`.`user_id` = `project_assignment`.`user_id` ' +
+      'INNER JOIN `role` ' +
+        'ON `role`.`role_id` = `project_assignment`.`role_id` ' +
+      'WHERE `project_assignment`.`project_id` = :projectId AND `project_assignment`.`user_id` = :userId ' +
+      'ORDER BY `user`.`user_id`;';
+
+    var result = await this._database.queryForOne(query, {projectId: this.id, userId: userId});
+
+    if (result == null) return null;
+
+    var user = User.create(result);
+    var role = Role.create(result);
+    result.project_id = this.id;
+    var assignment = ProjectAssignment.create(result, user, role);
+    return assignment;
+  }
+
+  async isMember(userId) {
+    var query = 'SELECT `user_id` from `project_assignment` WHERE `user_id` = :user_id;';
+
+    var assignment = await this._database.queryForOne(query, {user_id: userId});
+
+    return assignment != null;
+  }
+
   async getNonMembers() {
     var query =
       'SELECT `user`.`user_id`, `user`.`first_name`, `user`.`other_names` FROM `user` ' +
