@@ -5,12 +5,13 @@ import validate from 'server/validation';
 import moment from 'moment';
 
 export default class Task extends Model {
-  constructor(database, data) {
+  constructor(database, data, project) {
     super(database, 'task', data, Task.schema);
+    this.project = project;
   }
 
-  static create(data) {
-    return new Task(database, data);
+  static create(data, project = null) {
+    return new Task(database, data, project);
   }
 
 
