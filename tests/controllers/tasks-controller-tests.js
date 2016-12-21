@@ -3,6 +3,7 @@ import TestFrame from 'tests/test-frame';
 import Result from 'server/controllers/result';
 import { TasksController } from 'server/controllers/tasks-controller';
 import dummyLoggers from 'tests/dummy-loggers';
+import permissions from 'server/security/permissions';
 
 const catchHandler = catchAsync(function (err, st) {
   st.fail('Unexpected exception: ' + err.toString());
@@ -11,7 +12,8 @@ const catchHandler = catchAsync(function (err, st) {
 
 function createDummyUser() {
   return {
-    getRoleInProject: () => ({id: 1, name: 'Worker'})
+    getRoleInProject: () => ({id: 1, name: 'Worker'}),
+    isSysadminElevated: false
   };
 }
 
@@ -22,7 +24,8 @@ tests.createInstance = function () {
   };
 
   var project = {
-    getTasks: async () => [task]
+    getTasks: async () => [task],
+    addTask: async () => 1
   };
 
   var projects = {
@@ -30,7 +33,8 @@ tests.createInstance = function () {
   };
 
   var authorisor = {
-    hasGeneralPermission: () => true
+    hasGeneralPermission: () => true,
+    hasProjectPermission: async () => true
   };
 
   return new TasksController(dummyLoggers, authorisor, projects);
@@ -75,3 +79,67 @@ tests.testMethod('getTasks', function (t) {
   }));
 });
 
+tests.testMethod('addTask', function (t) {
+  t.test('It should return 403 for unauthorised users', catchHandler(async function (st, tasksController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    tasksController.authorisor.hasProjectPermission = async (user, projectId, permission) => {
+      st.equals(projectId, 'EXAMPLE');
+      st.deepEquals(permission, permissions.ADD_TASKS);
+      return false;
+    };
+
+    await tasksController.addTask(result, user, 'EXAMPLE', {});
+
+    st.equals(result.changes.status, 403);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 400 for bad data', catchHandler(async function (st, tasksController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await tasksController.addTask(result, user, 'EXAMPLE', {});
+
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 404 for a non-existent project', catchHandler(async function (st, tasksController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    tasksController.projects.getProject = async () => null;
+
+    await tasksController.addTask(result, user, 'EXAMPLE', {
+      summary: 'Test',
+      targetCompletion: '21/02/2020',
+      priority: 1,
+      estimatedEffort: 60,
+      assignedUserId: null
+    });
+
+    st.equals(result.changes.status, 404);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 201 when the task is created successfully', catchHandler(async function (st, tasksController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await tasksController.addTask(result, user, 'EXAMPLE', {
+      summary: 'Test',
+      targetCompletion: '21/02/2020',
+      priority: 1,
+      estimatedEffort: 60,
+      assignedUserId: null
+    });
+
+    st.equals(result.changes.status, 201);
+    st.end();
+  }));
+});

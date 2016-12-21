@@ -17,7 +17,8 @@ router.route('/')
     await res.result.end();
   }))
   .post(catchHandler(async function (req, res) {
-    // Create a task
+    await tasksController.addTask(res.result, req.user, req.projectId, req.body);
+    await res.result.end();
   }));
 
 router.param('taskId', function (req, res, next) {

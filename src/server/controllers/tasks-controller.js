@@ -101,7 +101,6 @@ export class TasksController {
 
       if (member) await member.role.getPermissions();
 
-      console.log(member && member.role.permissions);
       if (member == null || !member.role.hasPermission(permissions.ASSIGNEE)) {
         this.loggers.main.debug({user: user}, `Add Task - Assignee not a member or doesn't have the ASSIGNEE permission (Project: ${projectId}, Assignee ID: ${data.assignedUserId})`);
         result.delay().status(httpStatuses.BAD_REQUEST).data({
