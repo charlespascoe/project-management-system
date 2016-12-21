@@ -212,3 +212,27 @@ END;;
 
 DELIMITER ;
 
+# Create Permissions
+
+INSERT INTO `permission`
+    (`permission_id`, `permission_key`)
+VALUES
+    (1, 'ADD_TASKS'),
+    (2, 'ASSIGNEE'),
+    (3, 'MANAGE_PROJECT_MEMBERS');
+
+# Create default roles
+INSERT INTO `role`
+    (`role_id`, `role_name`)
+VALUES
+    (1, 'Observer'),
+    (2, 'Worker'),
+    (3, 'Project Administrator');
+
+INSERT INTO `role_permission`
+    (`role_id`, `permission_id`)
+VALUES
+    (2, 1),
+    (2, 2),
+    (3, 1),
+    (3, 3);
