@@ -75,8 +75,6 @@ export class MembersController {
 
     var nonMembers = await project.getNonMembers();
 
-    console.log(nonMembers);
-
     result.data(nonMembers.map(user => user.serialise()));
   }
 

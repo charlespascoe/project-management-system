@@ -19,12 +19,17 @@ function createDummyUser() {
 
 const tests = new TestFrame('TasksController');
 tests.createInstance = function () {
+  var nonMember = {
+    serialise: () => ({id: 1, firstName: 'Bob', otherNames: 'Smith'})
+  };
+
   var member = {
     serialise: () => ({user: {id: 1}, project: {id: 'EXAMPLE'}, role: {id: 1}})
   };
 
   var project = {
-    getMembers: async () => [member]
+    getMembers: async () => [member],
+    getNonMembers: async () => [nonMember]
   };
 
   var projects = {
@@ -82,6 +87,47 @@ tests.testMethod('getMembers', function (t) {
         result = new Result();
 
     await membersController.getMembers(result, user, 'EXAMPLE');
+
+    st.equals(result.changes.status, 200);
+    st.end();
+  }));
+});
+
+tests.testMethod('getNonMembers', function (t) {
+  t.test('It should return 403 to project members without correct permission', catchHandler(async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    membersController.authorisor.hasProjectPermission = async (user, projectId, permission) => {
+      st.deepEquals(permission, permissions.MANAGE_PROJECT_MEMBERS);
+      return false;
+    };
+
+    await membersController.getNonMembers(result, user, 'EXAMPLE');
+
+    st.equals(result.changes.status, 403);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 404 for a non-existent project', catchHandler(async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    membersController.projects.getProject = async () => null;
+
+    await membersController.getNonMembers(result, user, 'EXAMPLE');
+
+    st.equals(result.changes.status, 404);
+    st.ok(result.changes.delay > 0);
+    st.end();
+  }));
+
+  t.test('It should return 200 with the non-members', catchHandler(async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.getNonMembers(result, user, 'EXAMPLE');
 
     st.equals(result.changes.status, 200);
     st.end();
