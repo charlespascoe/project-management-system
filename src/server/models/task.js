@@ -14,7 +14,23 @@ export default class Task extends Model {
     return new Task(database, data, project);
   }
 
+  serialise(allDetails = false) {
+    var data = {
+      id: this.id,
+      project: {id: this.projectId},
+      summary: this.summary,
+      targetCompletion: this.targetCompletion,
+      state: this.state,
+      estimatedEffort: this.estimatedEffort,
+      assignee: {id: this.assignedUserId}
+    };
 
+    if (allDetails) {
+      data.description = this.description;
+    }
+
+    return data;
+  }
 }
 
 Task.schema = new Schema({
