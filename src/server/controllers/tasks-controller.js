@@ -23,7 +23,24 @@ export class TasksController {
       }
     }, 'getTasks called');
 
+    var userRole = user.getRoleInProject(projectId);
 
+    if (userRole == null && !user.isSysadminElevated) {
+      this.loggers.security.warn({user: user}, `Unauthorised attempt to get project tasks (Project ID: ${projectId})`);
+      result.delay().status(httpStatuses.FORBIDDEN);
+      return;
+    }
+
+    var project = await this.projects.getProject(projectId);
+
+    if (project == null) {
+      result.delay().status(httpStatuses.NOT_FOUND);
+      return;
+    }
+
+    var tasks = await project.getTasks();
+
+    result.data(tasks.map(task => task.serialise()));
   }
 
   async addTask(result, user, projectId, data) {
