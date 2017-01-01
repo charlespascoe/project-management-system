@@ -30,6 +30,6 @@ docker: build-production
 	rm -rf docker-build/
 
 export-docker:
-	@FILENAME=$$(echo '$(REPO)-$(TAG)' | sed -e 's/\./-/g' -e 's/[^a-zA-Z0-9_-]//g'); \
-	echo "Exporting $(REPO):$(TAG) to $$FILENAME.tar.gz, please wait..."; \
-	docker save '$(REPO):$(TAG)' | gzip > "$$FILENAME.tar.gz"
+	@FILENAME=$$(echo '$(DOCKER_REPO)-$(TAG)' | sed -e 's/\./-/g' -e 's/[^a-zA-Z0-9_-]//g'); \
+	echo "Exporting $(DOCKER_REPO):$(TAG) to $$FILENAME.tar.gz, please wait..."; \
+	docker save '$(DOCKER_REPO):$(TAG)' | gzip > "$$FILENAME.tar.gz"
