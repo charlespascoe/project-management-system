@@ -1,0 +1,13 @@
+{
+  "db": {
+    "connectionLimit": 10,
+    "host": "proj-mgmt-database",
+    "user": "app",
+    "password": "pass1234",
+    "database": "proj_mgr"
+  },
+  "logging": {
+    "level": "INFO",
+    "src": false
+  }
+}
