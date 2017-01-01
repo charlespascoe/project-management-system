@@ -33,3 +33,11 @@ export-docker:
 	@FILENAME=$$(echo '$(DOCKER_REPO)-$(TAG)' | sed -e 's/\./-/g' -e 's/[^a-zA-Z0-9_-]//g'); \
 	echo "Exporting $(DOCKER_REPO):$(TAG) to $$FILENAME.tar.gz, please wait..."; \
 	docker save '$(DOCKER_REPO):$(TAG)' | gzip > "$$FILENAME.tar.gz"
+
+deployment-package:
+	rm -rf deployment-package/
+	mkdir deployment-package/
+	cp database/create-database.sql deployment-package/
+	cp deployment-scripts/* deployment-package/
+	tar -zcf deployment-package.tgz deployment-package/
+	rm -rf deployment-package/
