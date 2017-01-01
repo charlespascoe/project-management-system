@@ -43,4 +43,4 @@ USER $USERNAME
 # Add server directory to NODE_PATH for requiring modules
 ENV NODE_PATH=$APP_DIR:$NODE_PATH
 
-CMD node server/index.js | node_modules/bunyan/bin/bunyan
+CMD node server/index.js
