@@ -11,7 +11,7 @@ init:
 	make build-client
 
 build-client:
-	cd "$(CLIENT_PATH)" && npm run build-production
+	cd "$(CLIENT_PATH)" && npm install && npm run build-production
 
 build:
 	npm run build
