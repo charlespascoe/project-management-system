@@ -23,6 +23,7 @@ ENV CONFIG_PATH=/etc/config.json
 ENV LOG_DIR=/var/log/app/
 RUN mkdir -p $LOG_DIR
 RUN chown -R $USERNAME:$USERNAME $LOG_DIR
+VOLUME $LOG_DIR
 
 # Import server source
 COPY docker-build/ .
