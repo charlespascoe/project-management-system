@@ -111,7 +111,7 @@ CREATE TABLE `task` (
     `task_id` int(11) NOT NULL,
     `task_summary` varchar(256) NOT NULL,
     `task_desc` text NOT NULL,
-    `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `created` timestamp NOT NULL,
     `target_completion` date,
     `state` enum('OPEN', 'IN_PROGRESS', 'COMPLETED') DEFAULT 'OPEN',
     `completed` timestamp NULL DEFAULT NULL,

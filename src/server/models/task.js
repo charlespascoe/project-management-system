@@ -19,10 +19,13 @@ export default class Task extends Model {
       id: this.id,
       project: {id: this.projectId},
       summary: this.summary,
-      targetCompletion: this.targetCompletion,
+      priority: this.priority,
+      created: this.created.format(),
+      completed: this.completed ? this.completed.format() : null,
+      targetCompletion: this.targetCompletion ? this.targetCompletion.format() : null,
       state: this.state,
       estimatedEffort: this.estimatedEffort,
-      assignee: {id: this.assignedUserId}
+      assignee: this.assignedUserId != null ? {id: this.assignedUserId} : null
     };
 
     if (allDetails) {
@@ -50,13 +53,25 @@ Task.schema = new Schema({
     column: 'task_desc',
     validate: (val) => validate(val).isString().maxLength(65536).isValid()
   },
+  created: {
+    column: 'created',
+    readonly: true,
+    getter: (val) => moment(val)
+  },
   targetCompletion: {
     column: 'target_completion',
-    validate: (val) => moment(val, 'DD/MM/YYYY', true).isValid()
+    validate: (str) => moment(str, 'DD/MM/YYYY', true).isValid(),
+    getter: (date) => date == null ? null : moment(date),
+    setter: (momnt) => momnt == null ? null : momnt.toDate()
   },
   state: {
     column: 'state',
     validate: (val) => validate(val).isString().isValueInObject(['OPEN', 'IN_PROGRESS', 'COMPLETED']).isValid()
+  },
+  completed: {
+    column: 'completed',
+    getter: (date) => date == null ? null : moment(date),
+    setter: (momnt) => momnt == null ? null : momnt.toDate()
   },
   estimatedEffort: {
     column: 'est_effort',
