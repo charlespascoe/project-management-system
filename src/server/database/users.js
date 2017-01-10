@@ -2,13 +2,11 @@ import User from 'server/models/user';
 import AuthenticationTokenPair from 'server/models/authentication-token-pair';
 import SqlUtils from 'server/database/sql-utils';
 import database from 'server/database/database';
-import roles from 'server/database/roles';
 import ProjectAssignment from 'server/models/project-assignment';
 
 export class Users {
-  constructor(database, roles) {
+  constructor(database) {
     this.database = database;
-    this.roles = roles;
   }
 
   async getAllUsers(includeInactive) {
@@ -70,4 +68,4 @@ export class Users {
   }
 }
 
-export default new Users(database, roles);
+export default new Users(database);
