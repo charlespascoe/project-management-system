@@ -62,7 +62,14 @@ gulp.task('build-test', ['clean-tests', 'babel'], function () {
       .pipe(gulp.dest('./.compiled-tests/tests')),
     gulp.src('./config/development.json')
       .pipe(rename('configuration.json'))
-      .pipe(gulp.dest('./.compiled-tests/server'))
+      .pipe(gulp.dest('./.compiled-tests/server')),
+    gulp.src('./config/test.json')
+      .pipe(rename('config.json'))
+      .pipe(gulp.dest('./.compiled-tests/tests')),
+    gulp.src('./database/create-database.sql')
+      .pipe(gulp.dest('./.compiled-tests/tests')),
+    gulp.src('./database/test-data.sql')
+      .pipe(gulp.dest('./.compiled-tests/tests'))
   );
 });
 
