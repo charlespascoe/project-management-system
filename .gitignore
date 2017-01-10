@@ -42,3 +42,4 @@ jspm_packages
 
 # Dev-specific config
 /config/development.json
+/config/test.json
