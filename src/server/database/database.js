@@ -55,6 +55,10 @@ export class Database {
 
     return new Transaction(this.nextTransactionId++, connection, this.dbLogger);
   }
+
+  async end() {
+    await this.pool.end();
+  }
 }
 
 export default new Database(config.db, loggers.db);
