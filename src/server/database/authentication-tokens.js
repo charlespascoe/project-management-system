@@ -13,6 +13,8 @@ export class AuthenticationTokens {
 
     var result = await this.database.queryForOne(query, {token_id: id});
 
+    if (result == null) return null;
+
     return new AuthenticationTokenPair(this.database, result);
   }
 
