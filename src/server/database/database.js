@@ -46,7 +46,7 @@ export class Database {
     return results[0];
   }
 
-  async transaction(func) {
+  async transaction() {
     var connection = await this.pool.getConnection();
 
     Utils.promisify(connection);
