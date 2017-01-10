@@ -1,13 +1,7 @@
-import catchAsync from 'server/catch-async';
 import CryptoUtils from 'server/crypto-utils';
 import TestFrame from 'tests/test-frame';
 import { Authenticator } from 'server/security/authenticator';
 import validate from 'server/validation';
-
-const catchHandler = catchAsync(function (err, st) {
-  st.fail('Unexpected exception: ' + err.toString());
-  st.end();
-});
 
 const tests = new TestFrame('Authenticator');
 tests.createInstance = function () {
@@ -54,30 +48,27 @@ tests.createInstance = function () {
 
 
 tests.testMethod('login', function (t) {
-  t.test('It should return null for non-existent user', catchHandler(async function (st, authenticator) {
+  t.test('It should return null for non-existent user', async function (st, authenticator) {
     authenticator.users.getUserByEmailResult = null;
     var result = await authenticator.login('bob@gmail.com', 'password');
     st.equals(result, null);
-    st.end();
-  }));
+  });
 
-  t.test('It should return null for incorrect password', catchHandler(async function (st, authenticator) {
+  t.test('It should return null for incorrect password', async function (st, authenticator) {
     authenticator.passHasher.verifyUserPasswordResult = false;
     var result = await authenticator.login('bob@gmail.com', 'password');
     st.equals(result, null);
-    st.end();
-  }));
+  });
 
-  t.test('It should return the auth token for the correct password', catchHandler(async function (st, authenticator) {
+  t.test('It should return the auth token for the correct password', async function (st, authenticator) {
     var result = await authenticator.login('bob@gmail.com', 'password');
     st.ok(Buffer.isBuffer(result.accessToken), 'accessToken should be a Buffer');
     st.ok(Buffer.isBuffer(result.refreshToken), 'refreshToken should be a Buffer');
-    st.end();
-  }));
+  });
 });
 
 tests.testMethod('generateAuthenticationTokenPair', function (t) {
-  t.test('It should return the access and refresh tokens as expected', catchHandler(async function (st, authenticator) {
+  t.test('It should return the access and refresh tokens as expected', async function (st, authenticator) {
     var user = {
       id: 123
     };
@@ -97,9 +88,7 @@ tests.testMethod('generateAuthenticationTokenPair', function (t) {
 
     st.ok(Buffer.isBuffer(authTokenPair.accessToken), 'accessToken should be a Buffer');
     st.ok(Buffer.isBuffer(authTokenPair.refreshToken), 'refreshToken should be a Buffer');
-
-    st.end();
-  }));
+  });
 });
 
 tests.testSet('Authenticator.getUserForToken', [
@@ -123,7 +112,7 @@ tests.testSet('Authenticator.getUserForToken', [
     args: [Buffer.from('123:abcd').toString('base64')],
     expected: true
   }
-], catchHandler(async function (st, args, expected, authenticator) {
+], async function (st, args, expected, authenticator) {
   var result = await authenticator.getUserForToken(...args, 'access');
 
   if (expected) {
@@ -131,9 +120,7 @@ tests.testSet('Authenticator.getUserForToken', [
   } else {
     st.equals(result, null);
   }
-
-  st.end();
-}));
+});
 
 
 

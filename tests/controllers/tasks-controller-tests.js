@@ -1,14 +1,8 @@
-import catchAsync from 'server/catch-async';
 import TestFrame from 'tests/test-frame';
 import Result from 'server/controllers/result';
 import { TasksController } from 'server/controllers/tasks-controller';
 import dummyLoggers from 'tests/dummy-loggers';
 import permissions from 'server/security/permissions';
-
-const catchHandler = catchAsync(function (err, st) {
-  st.fail('Unexpected exception: ' + err.toString());
-  st.end();
-});
 
 function createDummyUser() {
   return {
@@ -41,7 +35,7 @@ tests.createInstance = function () {
 };
 
 tests.testMethod('getTasks', function (t) {
-  t.test('It should return 403 if the user is not authorised', catchHandler(async function (st, tasksController) {
+  t.test('It should return 403 if the user is not authorised', async function (st, tasksController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -51,10 +45,9 @@ tests.testMethod('getTasks', function (t) {
 
     st.equals(result.changes.status, 403);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 404 for non-existent project', catchHandler(async function (st, tasksController) {
+  t.test('It should return 404 for non-existent project', async function (st, tasksController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -66,21 +59,19 @@ tests.testMethod('getTasks', function (t) {
 
     st.equals(result.changes.status, 404);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return the list of tasks for an authorised user', catchHandler(async function (st, tasksController) {
+  t.test('It should return the list of tasks for an authorised user', async function (st, tasksController) {
     var user = createDummyUser(),
         result = new Result();
 
     await tasksController.getTasks(result, user, 'EXAMPLE');
     st.equals(result.changes.status, 200);
-    st.end();
-  }));
+  });
 });
 
 tests.testMethod('addTask', function (t) {
-  t.test('It should return 403 for unauthorised users', catchHandler(async function (st, tasksController) {
+  t.test('It should return 403 for unauthorised users', async function (st, tasksController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -94,10 +85,9 @@ tests.testMethod('addTask', function (t) {
 
     st.equals(result.changes.status, 403);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 400 for bad data', catchHandler(async function (st, tasksController) {
+  t.test('It should return 400 for bad data', async function (st, tasksController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -105,10 +95,9 @@ tests.testMethod('addTask', function (t) {
 
     st.equals(result.changes.status, 400);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 404 for a non-existent project', catchHandler(async function (st, tasksController) {
+  t.test('It should return 404 for a non-existent project', async function (st, tasksController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -124,10 +113,9 @@ tests.testMethod('addTask', function (t) {
 
     st.equals(result.changes.status, 404);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 201 when the task is created successfully', catchHandler(async function (st, tasksController) {
+  t.test('It should return 201 when the task is created successfully', async function (st, tasksController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -140,6 +128,5 @@ tests.testMethod('addTask', function (t) {
     });
 
     st.equals(result.changes.status, 201);
-    st.end();
-  }));
+  });
 });

@@ -1,14 +1,8 @@
-import catchAsync from 'server/catch-async';
 import TestFrame from 'tests/test-frame';
 import Result from 'server/controllers/result';
 import { MembersController } from 'server/controllers/members-controller';
 import dummyLoggers from 'tests/dummy-loggers';
 import permissions from 'server/security/permissions';
-
-const catchHandler = catchAsync(function (err, st) {
-  st.fail('Unexpected exception: ' + err.toString());
-  st.end();
-});
 
 function createDummyUser() {
   return {
@@ -51,7 +45,7 @@ tests.createInstance = function () {
 };
 
 tests.testMethod('getMembers', function (t) {
-  t.test('It should return 403 for non-members', catchHandler(async function (st, membersController) {
+  t.test('It should return 403 for non-members', async function (st, membersController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -64,10 +58,9 @@ tests.testMethod('getMembers', function (t) {
 
     st.equals(result.changes.status, 403);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 404 for non-existent projects', catchHandler(async function (st, membersController) {
+  t.test('It should return 404 for non-existent projects', async function (st, membersController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -79,22 +72,20 @@ tests.testMethod('getMembers', function (t) {
 
     st.equals(result.changes.status, 404);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 200 with the project members', catchHandler(async function (st, membersController) {
+  t.test('It should return 200 with the project members', async function (st, membersController) {
     var user = createDummyUser(),
         result = new Result();
 
     await membersController.getMembers(result, user, 'EXAMPLE');
 
     st.equals(result.changes.status, 200);
-    st.end();
-  }));
+  });
 });
 
 tests.testMethod('getNonMembers', function (t) {
-  t.test('It should return 403 to project members without correct permission', catchHandler(async function (st, membersController) {
+  t.test('It should return 403 to project members without correct permission', async function (st, membersController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -107,10 +98,9 @@ tests.testMethod('getNonMembers', function (t) {
 
     st.equals(result.changes.status, 403);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 404 for a non-existent project', catchHandler(async function (st, membersController) {
+  t.test('It should return 404 for a non-existent project', async function (st, membersController) {
     var user = createDummyUser(),
         result = new Result();
 
@@ -120,16 +110,14 @@ tests.testMethod('getNonMembers', function (t) {
 
     st.equals(result.changes.status, 404);
     st.ok(result.changes.delay > 0);
-    st.end();
-  }));
+  });
 
-  t.test('It should return 200 with the non-members', catchHandler(async function (st, membersController) {
+  t.test('It should return 200 with the non-members', async function (st, membersController) {
     var user = createDummyUser(),
         result = new Result();
 
     await membersController.getNonMembers(result, user, 'EXAMPLE');
 
     st.equals(result.changes.status, 200);
-    st.end();
-  }));
+  });
 });
