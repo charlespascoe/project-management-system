@@ -19,12 +19,12 @@ tests.after = async (st) => {
 
 tests.testMethod('getAllProjects', function (t) {
   t.test('It should return all projects', async function (st, projects) {
-    var projects = await projects.getAllProjects();
+    var projs = await projects.getAllProjects();
 
-    st.equals(projects.length, 1);
-    st.equals(projects[0].id, 'EXAMPLE');
-    st.equals(projects[0].name, 'Example Project');
-    st.equals(projects[0].iconUrl, 'https://www.example.com/icon.png');
+    st.equals(projs.length, 1);
+    st.equals(projs[0].id, 'EXAMPLE');
+    st.equals(projs[0].name, 'Example Project');
+    st.equals(projs[0].iconUrl, 'https://www.example.com/icon.png');
   });
 });
 
