@@ -10,6 +10,7 @@ import routers from 'server/routers';
 import authenticate from 'server/middleware/authenticate';
 import cors from 'cors';
 import httpStatuses from 'http-status-codes';
+import fs from 'fs';
 
 const app = express();
 const port = 8080;
@@ -17,8 +18,6 @@ const port = 8080;
 app.locals.appName = 'Jeera';
 app.locals.version = '0.0.0-DEV';
 
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views/pages');
 app.disable('x-powered-by');
 
 app.use(function (req, res, next) {
@@ -29,6 +28,16 @@ app.use(function (req, res, next) {
   }
 
   next();
+});
+
+app.get('/', function (req, res) {
+  fs.readFile(__dirname + '/public/index.html', 'utf-8', function (err, html) {
+    if (err) {
+      res.status(500).end();
+    } else {
+      res.send(html);
+    }
+  });
 });
 
 app.use(function (err, req, res, next) {

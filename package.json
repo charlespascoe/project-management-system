@@ -51,7 +51,6 @@
     "body-parser": "^1.15.2",
     "bunyan": "^1.8.1",
     "cors": "^2.8.1",
-    "ejs": "^2.5.2",
     "express": "^4.14.0",
     "http-status-codes": "^1.0.6",
     "mysql": "^2.11.1",
