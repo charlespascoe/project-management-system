@@ -44,22 +44,22 @@ tests.testMethod('getProject', function (t) {
 
 tests.testMethod('createProject', function (t) {
   t.test('It should return true for a duplicate project ID', async function (st, projects) {
-    var idExists = await projects.createProject({
+    var success = await projects.createProject({
       id: 'EXAMPLE',
       name: 'Existing Project',
       iconUrl: 'https://www.example.com/icon.png'
     });
 
-    st.equals(idExists, true);
+    st.equals(success, false);
   });
 
   t.test('It should return false after successfully creating a project', async function (st, projects) {
-    var idExists = await projects.createProject({
+    var success = await projects.createProject({
       id: 'NEWID',
       name: 'New Project',
       iconUrl: 'https://www.example.com/icon.png'
     });
 
-    st.equals(idExists, false);
+    st.equals(success, true);
   });
 });

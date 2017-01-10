@@ -6,7 +6,7 @@ import dummyLoggers from 'tests/dummy-loggers';
 const tests = new TestFrame('ProjectsController');
 tests.createInstance = function () {
   var projects = {
-    createProject: async () => false
+    createProject: async () => true
   };
 
   var authorisor = {
@@ -60,7 +60,7 @@ tests.testMethod('createProject', function (t) {
   });
 
   t.test('It should return 409 for duplicate ID', async function (st, projController) {
-    projController.projects.createProject = async () => true;
+    projController.projects.createProject = async () => false;
 
     var result = new Result();
 

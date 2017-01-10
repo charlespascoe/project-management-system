@@ -61,9 +61,10 @@ export class ProjectsController {
       return;
     }
 
-    var idExists = await this.projects.createProject(data);
+    var success = await this.projects.createProject(data);
 
-    if (idExists) {
+    if (!success) {
+      this.loggers.main.warn({user: user}, `Attempt to create an existing project (Project ID: ${data.id})`);
       result.status(httpStatuses.CONFLICT);
       return;
     }

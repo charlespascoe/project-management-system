@@ -38,12 +38,12 @@ export class Projects {
     try {
       var result = await this.database.query(query, columnData);
     } catch (e) {
-      // project_id exists, return true
-      if (e.code == 'ER_DUP_ENTRY') return true;
+      // project_id exists, return false
+      if (e.code == 'ER_DUP_ENTRY') return false;
       throw e;
     }
 
-    return false;
+    return true;
   }
 }
 
