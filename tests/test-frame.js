@@ -25,8 +25,6 @@ class MethodTest {
         await cb(st, instance);
       } catch (ex) {
         st.fail('Unexpected exception: ' + ex.toString());
-        st.end();
-        return;
       }
 
       await this.after(st);
@@ -71,8 +69,6 @@ export default class TestFrame {
             await cb(st, item.args, item.expected, this.createInstance());
           } catch (ex) {
             st.fail('Unexpected exception: ' + ex.toString());
-            st.end();
-            return;
           }
 
           await this.after(st);
