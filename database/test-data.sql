@@ -10,6 +10,15 @@ INSERT INTO `project` SET
     `project_name` = 'Example Project',
     `icon_url` = 'https://www.example.com/icon.png';
 
+INSERT INTO `task` SET
+    `project_id` = 'EXAMPLE',
+    `task_id` = 1,
+    `task_summary` = 'Task Summary',
+    `task_desc` = 'Task Description',
+    `priority` = 2,
+    `est_effort` = 60,
+    `assigned_user_id` = 1;
+
 INSERT INTO `project_assignment` SET
     `project_id` = 'EXAMPLE',
     `user_id` = 1,
