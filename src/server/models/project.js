@@ -103,6 +103,8 @@ export default class Project extends Model {
   }
 
   async addTask(data) {
+    data.projectId = this.id;
+
     var columnData = Task.schema.mapPropertiesToColumns(data);
 
     if (columnData == null) throw new Error('Invalid data provided to Project.addTask');
@@ -116,9 +118,7 @@ export default class Project extends Model {
     var query =
       'INSERT INTO `task` SET ' + SqlUtils.formatData(columnData) + ';';
 
-    var result = await this._database.query(query, columnData);
-
-    console.log(result);
+    result = await this._database.query(query, columnData);
 
     return task_id;
   }

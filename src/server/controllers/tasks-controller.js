@@ -86,7 +86,6 @@ export class TasksController {
 
     // Convert to Date
     data.targetCompletion = moment(data.targetCompletion, 'DD/MM/YYYY').toDate();
-    data.projectId = projectId;
     data.created = moment.utc().toDate();
 
     var project = await this.projects.getProject(projectId);
