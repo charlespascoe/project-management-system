@@ -1,19 +1,19 @@
 import { Users } from 'server/database/users';
 import TestFrame from 'tests/test-frame';
-import dummyDatabase from 'tests/dummy-database';
+import testingDatabase from 'tests/testing-database';
 
-const users = new Users(dummyDatabase);
+const users = new Users(testingDatabase);
 
 const tests = new TestFrame('Users');
 tests.createInstance = () => users;
 
 tests.before = async () => {
-  dummyDatabase.init();
-  await dummyDatabase.reset();
+  testingDatabase.init();
+  await testingDatabase.reset();
 };
 
 tests.after = async (st) => {
-  await dummyDatabase.end();
+  await testingDatabase.end();
   st.end();
 };
 

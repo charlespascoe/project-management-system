@@ -1,17 +1,17 @@
 import TestFrame from 'tests/test-frame';
 import { Roles } from 'server/database/roles';
-import dummyDatabase from 'tests/dummy-database';
+import testingDatabase from 'tests/testing-database';
 
 const tests = new TestFrame('Roles', Roles);
-tests.createInstance = () => new Roles(dummyDatabase);
+tests.createInstance = () => new Roles(testingDatabase);
 
 tests.before = async () => {
-  dummyDatabase.init();
-  await dummyDatabase.reset();
+  testingDatabase.init();
+  await testingDatabase.reset();
 };
 
 tests.after = async (st) => {
-  await dummyDatabase.end();
+  await testingDatabase.end();
   st.end();
 };
 

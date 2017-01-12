@@ -1,20 +1,20 @@
 import { AuthenticationTokens } from 'server/database/authentication-tokens';
 import AuthenticationTokenPair from 'server/models/authentication-token-pair';
 import TestFrame from 'tests/test-frame';
-import dummyDatabase from 'tests/dummy-database';
+import testingDatabase from 'tests/testing-database';
 
-const authTokens = new AuthenticationTokens(dummyDatabase);
+const authTokens = new AuthenticationTokens(testingDatabase);
 
 const tests = new TestFrame('AuthenticationTokens');
 tests.createInstance = () => authTokens;
 
 tests.before = async () => {
-  dummyDatabase.init();
-  await dummyDatabase.reset();
+  testingDatabase.init();
+  await testingDatabase.reset();
 };
 
 tests.after = async (st) => {
-  await dummyDatabase.end();
+  await testingDatabase.end();
   st.end();
 };
 

@@ -13,7 +13,7 @@ function execute(command) {
   });
 }
 
-export class DummyDatabase {
+export class TestingDatabase {
   constructor(config, logger) {
     this.config = config;
     this.logger = logger;
@@ -45,4 +45,4 @@ export class DummyDatabase {
   }
 }
 
-export default new DummyDatabase(config.db, loggers.db);
+export default new TestingDatabase(config.db, loggers.db);
