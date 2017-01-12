@@ -10,6 +10,11 @@ INSERT INTO `project` SET
     `project_name` = 'Example Project',
     `icon_url` = 'https://www.example.com/icon.png';
 
+INSERT INTO `project_assignment` SET
+    `project_id` = 'EXAMPLE',
+    `user_id` = 1,
+    `role_id` = 3;
+
 INSERT INTO `authentication_token_pair` SET
     `user_id` = 1,
     `access_token_hash` = '8d70d691c822d55638b6e7fd54cd94170c87d19eb1f628b757506ede5688d297',
