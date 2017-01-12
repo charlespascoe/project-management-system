@@ -73,6 +73,9 @@ Task.schema = new Schema({
     getter: (date) => date == null ? null : moment(date),
     setter: (momnt) => momnt == null ? null : momnt.toDate()
   },
+  priority: {
+    column: 'priority'
+  },
   estimatedEffort: {
     column: 'est_effort',
     validate: (val) => validate(val).isNumber().min(1).max(999999).isValid()
