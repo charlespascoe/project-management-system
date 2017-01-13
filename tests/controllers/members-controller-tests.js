@@ -18,7 +18,8 @@ tests.createInstance = function () {
   };
 
   var member = {
-    serialise: () => ({user: {id: 1}, project: {id: 'EXAMPLE'}, role: {id: 1}})
+    serialise: () => ({user: {id: 1}, project: {id: 'EXAMPLE'}, role: {id: 1}}),
+    save: async () => null
   };
 
   var project = {
@@ -32,10 +33,21 @@ tests.createInstance = function () {
     getProject: async () => project
   };
 
+  var user = {
+    dummyAssignment: member,
+    getRoleInProject: () => member
+  };
+
   var users = {
+    dummyUser: user,
+    getUserById: async () => user
+  };
+
+  var role = {
   };
 
   var roles = {
+    getRoleById: async () => role
   };
 
   var authorisor = {
@@ -240,5 +252,77 @@ tests.testMethod('addMember', function (t) {
 
     st.equals(result.changes.status, 204);
     st.equals(result.changes.delay, 0);
+  });
+});
+
+tests.testMethod('updateMember', function (t) {
+  t.test('It should return 400 for an invalid data object', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.updateMember(result, user, 'EXAMPLE', 1, null);
+
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 400 for an invalid role ID', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.updateMember(result, user, 'EXAMPLE', 1, {roleId: 'Fake ID'});
+
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 403 for an unauthorised user', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    membersController.authorisor.hasProjectPermission = async () => false;
+
+    await membersController.updateMember(result, user, 'EXAMPLE', 1, {roleId: 1});
+
+    st.equals(result.changes.status, 403);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 404 if the user doesn\'t exist', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    membersController.users.getUserById = async () => null;
+
+    await membersController.updateMember(result, user, 'EXAMPLE', 1, {roleId: 1});
+
+    st.equals(result.changes.status, 404);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 404 for a non-existent role', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    membersController.roles.getRoleById = async () => null;
+
+    await membersController.updateMember(result, user, 'EXAMPLE', 1, {roleId: 1});
+
+    st.equals(result.changes.status, 404);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 204 after successfully updating the role', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result(),
+        saveCalled = false;
+
+    membersController.users.dummyUser.dummyAssignment.save = async () => saveCalled = true;
+
+    await membersController.updateMember(result, user, 'EXAMPLE', 1, {roleId: 1});
+
+    st.equals(result.changes.status, 204);
+    st.equals(result.changes.delay, 0);
+    st.ok(saveCalled, 'ProjectAssignment.save should have been called');
   });
 });
