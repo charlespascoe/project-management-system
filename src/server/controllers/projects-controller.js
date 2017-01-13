@@ -40,11 +40,13 @@ export class ProjectsController {
       return;
     }
 
-    if (typeof data != 'object') {
+    if (data === null || typeof data != 'object') {
+      this.loggers.main.warn({user: user}, `Invalid data type when trying to create a project (Data Type: ${data === null ? 'null' : typeof data})`);
       result.delay().status(httpStatuses.BAD_REQUEST);
       return;
     }
 
+    // Strip other values from the data object
     data = {
       id: data.id,
       name: data.name,
