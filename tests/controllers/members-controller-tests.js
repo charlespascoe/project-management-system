@@ -11,7 +11,7 @@ function createDummyUser() {
   };
 }
 
-const tests = new TestFrame('TasksController');
+const tests = new TestFrame('MembersController');
 tests.createInstance = function () {
   var nonMember = {
     serialise: () => ({id: 1, firstName: 'Bob', otherNames: 'Smith'})
@@ -23,10 +23,12 @@ tests.createInstance = function () {
 
   var project = {
     getMembers: async () => [member],
-    getNonMembers: async () => [nonMember]
+    getNonMembers: async () => [nonMember],
+    addMember: async () => null
   };
 
   var projects = {
+    dummyProject: project,
     getProject: async () => project
   };
 
@@ -119,5 +121,124 @@ tests.testMethod('getNonMembers', function (t) {
     await membersController.getNonMembers(result, user, 'EXAMPLE');
 
     st.equals(result.changes.status, 200);
+  });
+});
+
+tests.testMethod('addMember', function (t) {
+  t.test('It should return 400 for invalid data object', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', null);
+
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 400 for an invalid role ID', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', {
+      roleId: 'Clearly invalid role ID',
+      userId: 1
+    });
+
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 400 for an invalid user ID', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', {
+      roleId: 1,
+      userId: 'Clearly invalid user ID'
+    });
+
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 403 for an unauthorised user', async function (st, membersController) {
+    membersController.authorisor.hasProjectPermission = async () => false;
+
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', {
+      roleId: 1,
+      userId: 1
+    });
+
+    st.equals(result.changes.status, 403);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 404 for a non-existent project ID', async function (st, membersController) {
+    membersController.projects.getProject = async () => null;
+
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', {
+      roleId: 1,
+      userId: 1
+    });
+
+    st.equals(result.changes.status, 404);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 409 if the user is already a member', async function (st, membersController) {
+    membersController.projects.dummyProject.addMember = async (userId, roleId) => {
+      st.equals(userId, 1);
+      st.equals(roleId, 2);
+      return 'DUPLICATE';
+    };
+
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', {
+      roleId: 2,
+      userId: 1
+    });
+
+    st.equals(result.changes.status, 409);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 404 if the user or role doesn\'t exist', async function (st, membersController) {
+    membersController.projects.dummyProject.addMember = async (userId, roleId) => {
+      st.equals(userId, 1);
+      st.equals(roleId, 2);
+      return 'NOT_FOUND';
+    };
+
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', {
+      roleId: 2,
+      userId: 1
+    });
+
+    st.equals(result.changes.status, 404);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 204 when the user is successfully added', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    await membersController.addMember(result, user, 'EXAMPLE', {
+      roleId: 2,
+      userId: 1
+    });
+
+    st.equals(result.changes.status, 204);
+    st.equals(result.changes.delay, 0);
   });
 });
