@@ -91,7 +91,7 @@ tests.testMethod('addTask', function (t) {
     var user = createDummyUser(),
         result = new Result();
 
-    await tasksController.addTask(result, user, 'EXAMPLE', {});
+    await tasksController.addTask(result, user, 'EXAMPLE', null);
 
     st.equals(result.changes.status, 400);
     st.ok(result.changes.delay > 0);

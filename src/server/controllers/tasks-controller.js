@@ -61,8 +61,10 @@ export class TasksController {
       return;
     }
 
-    if (typeof data != 'object') {
-      result.delay().status(httpStatuses.BAD_REQUEST);
+    if (data === null || typeof data != 'object') {
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Data object required'
+      });
       return;
     }
 
