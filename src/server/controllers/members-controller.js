@@ -251,7 +251,7 @@ export class MembersController {
     var otherUser = await this.users.getUserById(userId);
     var projectAssignment = null;
 
-    if (user != null) projectAssignment = otherUser.getRoleInProject(projectId);
+    if (otherUser != null) projectAssignment = otherUser.getRoleInProject(projectId);
 
     if (projectAssignment == null) {
       this.loggers.main.warn({user: user}, `Remove Member - User not found or not a member (User ID: ${userId})`);
