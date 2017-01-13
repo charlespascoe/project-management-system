@@ -171,15 +171,19 @@ export class MembersController {
     }, 'updateMember called');
     // Both projectId and userId will have been validated by this point
 
-    if (typeof data != 'object') {
-      this.loggers.main.debug({user: user}, `Update Member - Invalid data type: ${typeof data}`);
-      result.delay().status(httpStatuses.BAD_REQUEST);
+    if (data === null || typeof data != 'object') {
+      this.loggers.main.debug({user: user}, `Update Member - Invalid data type: ${data === null ? 'null' : typeof data}`);
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Data must be an object'
+      });
       return;
     }
 
     if (!Role.schema.id.validate(data.roleId)) {
       this.loggers.main.debug({user: user}, `Update Member - Invalid Role ID: ${data.roleId}`);
-      result.delay().status(httpStatuses.BAD_REQUEST);
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Invalid role ID'
+      });
       return;
     }
 
@@ -200,7 +204,9 @@ export class MembersController {
 
     if (projectAssignment == null) {
       this.loggers.main.warn({user: user}, `Update Member - User not found or not a member (User ID: ${userId})`);
-      result.delay().status(httpStatuses.NOT_FOUND);
+      result.delay().status(httpStatuses.NOT_FOUND).data({
+        msg: 'User not found or not a member'
+      });
       return;
     }
 
@@ -208,7 +214,9 @@ export class MembersController {
 
     if (role == null) {
       this.loggers.main.warn({user: user}, `Update Member - Role not found (Role ID: ${roleId})`);
-      result.delay().status(httpStatuses.BAD_REQUEST);
+      result.delay().status(httpStatuses.NOT_FOUND).data({
+        msg: 'Role not found'
+      });
       return;
     }
 
