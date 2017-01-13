@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authenticate from 'server/middleware/authenticate';
+import antihammering from 'server/middleware/antihammering';
 import authenticationController from 'server/controllers/authentication-controller';
 import catchAsync from 'server/catch-async';
 import httpStatuses from 'http-status-codes';
@@ -12,11 +13,15 @@ const catchHandler = catchAsync(function (err, req, res) {
 
 var router = new Router();
 
-router.get('/auth-token', catchHandler(async function (req, res) {
+router.get('/auth-token', antihammering(), catchHandler(async function (req, res) {
   // Technically it's the authentication header, but hey...
   var authHeader = req.headers.authorization;
   await authenticationController.getAuthToken(res.result, req.ip, authHeader, req.query['long-expiry'] == 'true');
   await res.result.end();
+
+  if (res.result.changes.status == httpStatuses.UNAUTHORIZED) {
+    req.hit();
+  }
 }));
 
 router.delete('/auth-token/:tokenId?', authenticate, catchHandler(async function (req, res) {
