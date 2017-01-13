@@ -88,15 +88,19 @@ export class MembersController {
       }
     }, 'addMember called');
 
-    if (typeof data != 'object') {
-      this.loggers.main.debug({user: user}, `Add Member - Invalid data type: ${typeof data}`);
-      result.delay().status(httpStatuses.BAD_REQUEST);
+    if (data === null || typeof data != 'object') {
+      this.loggers.main.debug({user: user}, `Add Member - Invalid data type: ${data === null ? 'null' : typeof data}`);
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Data must be an object'
+      });
       return;
     }
 
     if (!Role.schema.id.validate(data.roleId)) {
       this.loggers.main.debug({user: user}, `Add Member - Invalid Role ID: ${data.roleId}`);
-      result.delay().status(httpStatuses.BAD_REQUEST);
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Invalid role ID'
+      });
       return;
     }
 
@@ -104,7 +108,9 @@ export class MembersController {
 
     if (!User.schema.id.validate(data.userId)) {
       this.loggers.main.debug({user: user}, `Add Member - Invalid User ID: ${data.userId}`);
-      result.delay().status(httpStatuses.BAD_REQUEST);
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Invalid user ID'
+      });
       return;
     }
 
@@ -136,7 +142,9 @@ export class MembersController {
 
     if (errorCode == 'NOT_FOUND') {
       this.loggers.main.warn({user: user}, `Add Member - User or Role not found (User ID: ${userId}, Role ID: ${roleId})`);
-      result.delay().status(httpStatuses.NOT_FOUND);
+      result.delay().status(httpStatuses.NOT_FOUND).data({
+        msg: 'User or Role not found'
+      });
       return;
     }
 
