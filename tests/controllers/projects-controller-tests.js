@@ -17,6 +17,15 @@ tests.createInstance = function () {
 };
 
 tests.testMethod('createProject', function (t) {
+  t.test('It should return 400 for an invalid data object', async function (st, projController) {
+    var result = new Result();
+
+    await projController.createProject(result, {}, null);
+
+    st.equals(result.changes.status, 400);
+    st.ok(result.changes.delay > 0);
+  });
+
   t.test('It should return 400 for invalid project name', async function (st, projController) {
     projController.projects.createProject = () => st.fail('Projects.createProject should not have been called');
     var result = new Result();
@@ -71,6 +80,20 @@ tests.testMethod('createProject', function (t) {
     });
 
     st.equals(result.changes.status, 409);
-    // No delay, which is fine
+    // No delay, which is fine, because this could happen through legitimate use of the system
+    st.equals(result.changes.delay, 0);
+  });
+
+  t.test('It should return 201 after successfully creating the project', async function (st, projController) {
+    var result = new Result();
+
+    await projController.createProject(result, {}, {
+      id: 'TEST',
+      name: 'Test Project',
+      iconUrl: 'https://www.example.com/icon.png'
+    });
+
+    st.equals(result.changes.status, 201);
+    st.equals(result.changes.delay, 0);
   });
 });
