@@ -5,8 +5,18 @@ import dummyLoggers from 'tests/dummy-loggers';
 
 const tests = new TestFrame('ProjectsController');
 tests.createInstance = function () {
+  var project = {
+    serialise: () => ({
+      id: 'EXAMPLE',
+      name: 'Example Project',
+      iconUrl: 'https://www.test.com/icon.png'
+    })
+  };
+
   var projects = {
-    createProject: async () => true
+    dummyProject: project,
+    createProject: async () => true,
+    getAllProjects: async () => [project]
   };
 
   var authorisor = {
@@ -15,6 +25,30 @@ tests.createInstance = function () {
 
   return new ProjectsController(dummyLoggers, projects, authorisor);
 };
+
+tests.testMethod('getProjects', function (t) {
+  t.test('It should return 403 for an unauthorised user', async function (st, projController) {
+    var result = new Result();
+
+    projController.authorisor.hasGeneralPermission = () => false;
+
+    await projController.getProjects(result, {});
+
+    st.equals(result.changes.status, 403);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 200 and the projects when successful', async function (st, projController) {
+    var result = new Result();
+
+    await projController.getProjects(result, {});
+
+    st.equals(result.changes.status, 200);
+    st.equals(result.changes.delay, 0);
+    st.equals(result.changes.data.length, 1);
+    st.deepEquals(result.changes.data[0], projController.projects.dummyProject.serialise());
+  });
+});
 
 tests.testMethod('createProject', function (t) {
   t.test('It should return 400 for an invalid data object', async function (st, projController) {
