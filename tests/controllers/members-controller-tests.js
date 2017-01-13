@@ -326,3 +326,43 @@ tests.testMethod('updateMember', function (t) {
     st.ok(saveCalled, 'ProjectAssignment.save should have been called');
   });
 });
+
+tests.testMethod('removeMember', function (t) {
+  t.test('It should return 403 if the user is unauthorised', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    membersController.authorisor.hasProjectPermission = async () => false;
+
+    await membersController.removeMember(result, user, 'EXAMPLE', 1);
+
+    st.equals(result.changes.status, 403);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 404 for a non-existent user', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result();
+
+    membersController.users.getUserById = async () => null;
+
+    await membersController.removeMember(result, user, 'EXAMPLE', 1);
+
+    st.equals(result.changes.status, 404);
+    st.ok(result.changes.delay > 0);
+  });
+
+  t.test('It should return 204 after successfully removing the member', async function (st, membersController) {
+    var user = createDummyUser(),
+        result = new Result(),
+        deleteCalled = false;
+
+    membersController.users.dummyUser.dummyAssignment.delete = async () => deleteCalled = true;
+
+    await membersController.removeMember(result, user, 'EXAMPLE', 1);
+
+    st.equals(result.changes.status, 204);
+    st.equals(result.changes.delay, 0);
+    st.ok(deleteCalled, 'ProjectAssignment.delete should have been called');
+  });
+});
