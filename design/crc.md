@@ -204,9 +204,12 @@ Security Classes
 
 PasswordHasher
 --------------
+* Knows
+  * The current parameters to use when hashing new passwords
 * Does
   * Hashes passwords
   * Verifies passwords and password hashes
+  * Updates password hash if it uses old parameters
 
 Authenticator
 -------------
@@ -214,6 +217,7 @@ Authenticator
   * Authenticates user login requests
   * Authenticates refresh requests
   * Generates authentication token pairs
+  * Elevates a system administrator's login session
 * Collaborators
   * Users
   * User
@@ -222,9 +226,11 @@ Authenticator
 Authorisor
 ----------
 * Does
-  * Verifies that a user has the correct permission for a particular action
+  * Verifies that a user is correctly elevated for a system administrator action
+  * Verifies that a user has the correct permission for a given project
 * Collaborators
   * User
+  * ProjectAssignment
   * Role
 
 Controller Classes
