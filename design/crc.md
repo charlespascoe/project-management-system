@@ -241,6 +241,9 @@ AuthenticationController
 * Does
   * Handles requests to create a new authentication token pair
   * Handles requests to delete an authentication token pair
+  * Handles requests to elevate a login session
+  * Handles requests to drop system administrator elevation
+  * Handles requests to change the user's password
 * Collaborators
   * User
   * AuthenticationTokenPair
@@ -252,17 +255,20 @@ UsersController
   * Handles requests to add a user
   * Handles requests to get all users
   * Handles requests to get a specific user's details
+  * Handles requests to get a user's assignments
   * Handles requests to edit a user's details
   * Handles requests to delete a user
 * Collaborators
   * Authorisor
   * Users
+  * User
+  * ProjectAssignment
 
 ProjectsController
 ------------------
 * Does
-  * Handles requests to create a new project
   * Handles requests to get all projects
+  * Handles requests to create a new project
   * Handles requests to edit a project's details
 * Collaborators
   * Authorisor
@@ -271,22 +277,28 @@ MembersController
 -----------------
 * Does
   * Handles requests to get all project members
-  * Handles requests to add users to a project
-  * Handles requests to update a user's role in a project
-  * Handles requests to remove a user from a project
+  * Handles requests to get project non-members
+  * Handles requests to add a user to a project
+  * Handles requests to update a member's role in a project
+  * Handles requests to remove a member from a project
 * Collaborators
   * Projects
   * Project
   * User
+  * Roles
+  * Role
   * Authorisor
 
 TasksController
 ---------------
 * Does
-  * Handles requests to create a new task to a project
   * Handles requests to get all tasks within a project
+  * Handles requests to create a new task in a project
+  * Handles requests to get a task's details (description etc.)
   * Handles requests to edit a task
 * Collaborators
+  * Project
+  * Task
   * Authorisor
 
 WorkLogController
@@ -295,4 +307,18 @@ WorkLogController
   * Handles requests to create a new log entry for a task
   * Handles requests to get all work log entries for a task
   * Handles deleting log entries
+* Collaborators
+  * Authorisor
+  * User
+  * ProjectAssignment
+  * Task
+  * WorkLogEntry
+
+RolesController
+---------------
+* Does
+  * Handles requests to get all roles
+* Collaborators
+  * Roles
+  * Role
 
