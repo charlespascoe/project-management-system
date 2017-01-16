@@ -125,3 +125,13 @@ tests.testMethod('addTask', function (t) {
     st.equals(result.est_effort, data.estimatedEffort, 'Estimated Effort should be correct');
   });
 });
+
+tests.testMethod('serialise', function (t) {
+  t.test('It should return the data correctly', async function (st, project) {
+    st.deepEquals(project.serialise(), {
+      id: 'EXAMPLE',
+      name: 'Example Project',
+      iconUrl: 'https://www.example.com/icon.png'
+    });
+  });
+});
