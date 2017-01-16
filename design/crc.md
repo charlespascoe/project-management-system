@@ -166,13 +166,20 @@ Database
 Users
 -----
 * Does
+  * Gets all users from the database
   * Gets a user by email or ID from database
   * Adds a user to the database
-  * Adds an authentication token pair to the database
 * Collaborators
   * Database
   * User
-  * AuthenticationToken
+
+AuthenticationTokens
+--------------------
+* Does
+  * Adds an authentication token pair to the database
+* Collaborators
+  * Database
+  * AuthenticationTokenPair
 
 Projects
 --------
@@ -182,6 +189,15 @@ Projects
 * Collaborators
   * Database
   * Project
+
+Roles
+-----
+* Does
+  * Gets a role by ID
+  * Gets all roles
+* Collaborators
+  * Database
+  * Role
 
 Security Classes
 ================
