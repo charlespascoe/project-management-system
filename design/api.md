@@ -6,11 +6,20 @@ Routes
 ======
 
 * /auth/auth-token
-    * GET - Given some means of authentication (either username/password or refresh token) via the 'Authorization' header, it will return a new authentication token pair (access/refresh token) and a unique ID for the pair
+  * GET - Given some means of authentication (either username/password or refresh token) via the 'Authorization' header, it will return a new authentication token pair (access/refresh token) and a unique ID for the pair
+    * "Basic" authentication (username and password, separated by a colon, encoded using Base 64) for password-based authentication
+    * "Bearer" authentication for refresh token
 * /auth/auth-token/{Optional Token Pair ID}
   * DELETE - Invalidates the specified authentication token pair (e.g. on logout)
     * If no ID is provided, the token used to make the request will be deleted
     * Requires a valid access token when making the request
+* /auth/reset-password
+  * GET - Initiates a new password reset, returns details to render a CAPTCHA
+  * POST - Initaites the passoword reset process
+    * Data must include the CAPTCHA result and the user's email
+* /auth/set-passord
+  * POST - Sets a password, either for a new user or from a password reset
+    * Requires a valid password reset token and an acceptable password
 
 All other requests require a valid access token to succeed
 
@@ -85,5 +94,4 @@ All other requests require a valid access token to succeed
       * Any user with the `DELETE_ANY_WORK_LOG` permission
 * /roles
   * GET - Returns the list of roles each user can have
-  * (Routes that create/update/delete roles would be here)
 

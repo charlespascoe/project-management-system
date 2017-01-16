@@ -118,10 +118,12 @@ export class TasksController {
   }
 
   async getTaskDetails(result, user, projectId, taskId) {
-
+    throw new Error('TasksController.getTaskDetails not implemented yet');
   }
 
-
+  async editTaskDetails(result, user, projectId, taskId, data) {
+    throw new Error('TasksController.editTaskDetails not implemented yet');
+  }
 }
 
 export default new TasksController(loggers, authorisor, projects);

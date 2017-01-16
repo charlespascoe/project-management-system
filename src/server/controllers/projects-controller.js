@@ -73,6 +73,10 @@ export class ProjectsController {
 
     result.status(httpStatuses.CREATED);
   }
+
+  async editProjet(result, user, projectId, data) {
+    throw new Error('ProjectsController.editProject not implemented');
+  }
 }
 
 export default new ProjectsController(loggers.forClass('ProjectsController'), projects, authorisor);
