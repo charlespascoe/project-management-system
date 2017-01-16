@@ -34,6 +34,7 @@ AuthenticationTokenPair (Extends Model)
   * The access token hash and its expiry
   * The refresh token hash and its expiry
   * When this session's system administrator priviledges expire
+  * Formats the data to be sent to the client
 * Collaborators
   * Database
   * Schema
@@ -50,6 +51,7 @@ User (Extends Model)
 * Does
   * Saves an authentication token to the database
   * Deactive the user
+  * Formats the data to be sent to the client
 * Collaborators
   * AuthenticationToken
   * Database
@@ -60,6 +62,8 @@ Role (Extends Model)
 * Knows
   * Role Name
   * Permissions (application-defined string constants) that this role has
+* Does
+  * Formats the data to be sent to the client
 * Collaborators
   * Database
   * Schema
@@ -70,6 +74,8 @@ ProjectAssignment (Extends Model)
   * The user
   * The project
   * The role the user has in that project
+* Does
+  * Formats the data to be sent to the client
 * Collaborators
   * User
   * Project
@@ -89,11 +95,52 @@ Project (Extends Model)
   * Add a user as a project member
   * Loads assigned project members from the database
   * Removes a project member
+  * Formats the data to be sent to the client
 * Collaborators
   * Database
   * Schema
   * Task
   * Assignment
+
+Task (Extends Model)
+--------------------
+* Knows
+  * The project this task belongs to
+  * Task ID
+  * Summary
+  * Description
+  * Estimated Effort
+  * Created timestamp
+  * Target Completion Date
+  * State
+  * Completed Timestamp
+  * The assigned user
+* Does
+  * Gets the work log associated with the task
+  * Formats the data to be sent to the client
+* Collaborators
+  * Database
+  * Schema
+  * Project
+  * WorkLogEntry
+
+WorkLogEntry (Extend Model)
+---------------------------
+* Knows
+  * The task this work log belongs to
+  * Log ID
+  * The user that created the log
+  * Log description
+  * Log effort
+  * Log timestamp
+* Does
+  * Formats the data to be sent to the client
+* Collaborators
+  * Database
+  * Schema
+  * Task
+  * User
+
 
 Database Classes
 ================
