@@ -176,7 +176,7 @@ export class UsersController {
 
     if (!otherUser) {
       this.loggers.main.debug({user: user}, `Get User Assignments - User not found (User ID or email: ${idOrEmail})`);
-      result.status(httpStatuses.NOT_FOUND);
+      result.delay().status(httpStatuses.NOT_FOUND);
       return;
     }
 
