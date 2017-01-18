@@ -35,21 +35,21 @@ tests.testMethod('login', function (t) {
   t.test('It should return 400 for undefined password', async function (st, authController) {
     authController.authenticator.login = async () => st.fail('Authenticator.login should not have been called');
 
-    var result = await authController.login(new Result, '127.0.0.1', 'bob', undefined);
+    var result = await authController.login(new Result, '127.0.0.1', 'bob@mail.com', undefined);
     st.equals(result.changes.status, 400);
     st.ok(result.changes.delay > 0);
   });
 
-  t.test('It should return 400 for invalid username', async function (st, authController) {
+  t.test('It should return 400 for invalid password', async function (st, authController) {
     authController.authenticator.login = async () => st.fail('Authenticator.login should not have been called');
 
-    var result = await authController.login(new Result, '127.0.0.1', 'bob', 'a'.repeat(2048));
+    var result = await authController.login(new Result, '127.0.0.1', 'bob@mail.com', 'a'.repeat(2048));
     st.equals(result.changes.status, 400);
     st.ok(result.changes.delay > 0);
   });
 
   t.test('It should return 401 for invalid user login', async function (st, authController) {
-    var result = await authController.login(new Result, '127.0.0.1', 'bob', 'pass1234');
+    var result = await authController.login(new Result, '127.0.0.1', 'bob@mail.com', 'pass1234');
     st.equals(result.changes.status, 401);
     st.ok(result.changes.delay > 0);
   });
@@ -64,7 +64,7 @@ tests.testMethod('login', function (t) {
       }
     };
 
-    var result = await authController.login(new Result, '127.0.0.1', 'bob', 'pass1234');
+    var result = await authController.login(new Result, '127.0.0.1', 'bob@mail.com', 'pass1234');
     st.equals(result.changes.status, 200);
     st.deepEquals(result.changes.data, {
       accessToken: 'accessToken',

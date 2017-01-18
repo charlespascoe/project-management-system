@@ -80,7 +80,7 @@ User.schema = new Schema({
   },
   email: {
     column: 'email',
-    validate: (email) => validate(email).isString().minLength(1).maxLength(128).isValid()
+    validate: (email) => validate(email).isString().minLength(1).maxLength(128).isProbablyEmail().isValid()
   },
   firstName: {
     column: 'first_name',
