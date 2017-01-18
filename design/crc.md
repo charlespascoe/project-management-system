@@ -218,6 +218,8 @@ Authenticator
   * Authenticates refresh requests
   * Generates authentication token pairs
   * Elevates a system administrator's login session
+  * Generates password reset tokens
+  * Hashes new passwords
 * Collaborators
   * Users
   * User
@@ -248,6 +250,8 @@ AuthenticationController
   * User
   * AuthenticationTokenPair
   * Authenticator
+  * EmailDistributor
+  * EmailTemplator
 
 UsersController
 ---------------
@@ -262,7 +266,10 @@ UsersController
   * Authorisor
   * Users
   * User
+  * Authenticator
   * ProjectAssignment
+  * EmailDistributor
+  * EmailTemplator
 
 ProjectsController
 ------------------
@@ -321,4 +328,20 @@ RolesController
 * Collaborators
   * Roles
   * Role
+
+Miscellaneous
+=============
+
+EmailDistributor
+----------------
+* Knows
+  * Email distribution server configuration
+* Does
+  * Sends a HTML email to a given email address
+
+EmailTemplator
+--------------
+* Does
+  * Generates the HTML for a password reset email, with the given user's name and password reset token
+  * Generates the HTML for a welcome email, with the given user's name and password reset token
 
