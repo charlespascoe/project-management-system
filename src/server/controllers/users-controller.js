@@ -14,6 +14,14 @@ export class UsersController {
   }
 
   async addUser(result, user, data) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        data: data
+      }
+    }, 'addUser called');
+
     if (!this.authorisor.hasGeneralPermission(user, generalPermissions.ADD_USER)) {
       this.loggers.security.warn({user: user}, 'Unauthorised attempt to add a user');
       result.delay().status(httpStatuses.FORBIDDEN);
@@ -37,6 +45,7 @@ export class UsersController {
     var invalidItem = User.schema.invalid(data);
 
     if (invalidItem) {
+      this.loggers.main.warn({user: user}, `Attempt to add a user with invalid data (Invalid item: ${invalidItem})`);
       result.delay().status(httpStatuses.BAD_REQUEST).data({
         msg: `Missing or invalid key: '${invalidItem}'`
       });
@@ -46,13 +55,14 @@ export class UsersController {
     var userId = await this.users.addUser(data);
 
     if (userId == null) {
+      this.loggers.main.info({user: user}, `Attempt to add a user with an existing email address (Email: ${data.email})`);
       result.status(httpStatuses.CONFLICT);
       return;
     }
 
+    // TODO: Implement real functionality
     // By this point, a set password token would be generated and sent to the user's email so that they can set their password.
-    // For now, their password defaults to 'pass1234' for the purpose of demonstration, because implementing the real functionality
-    // would take too long.
+    // For now, their password defaults to 'pass1234'
     var newUser = await this.users.getUserById(userId);
     newUser.passHash = '$argon2i$v=19$m=4096,t=3,p=1$q83vASNFZ4k$V7yt2zgip4VEyPZvAU02EerNEt5mbOFwEKiyxTHVkG0';
     await newUser.save();
@@ -64,6 +74,14 @@ export class UsersController {
 
   async deleteUser(result, user, idOrEmail) {
     // Note: this method assumes that idOrEmail has already be validated and converted to a number (if it's an ID)
+
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        idOrEmail: idOrEmail
+      }
+    }, 'deleteUser called');
 
     if (typeof idOrEmail == 'string') idOrEmail = idOrEmail.toLowerCase();
 
@@ -99,6 +117,14 @@ export class UsersController {
   }
 
   async getUsers(result, user, includeInactive) {
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        includeInactive: includeInactive
+      }
+    }, 'getUsers called');
+
     if (!this.authorisor.hasGeneralPermission(user, generalPermissions.GET_OTHER_USER_DETAILS)) {
       this.loggers.security.warn({user: user}, 'Unauthorised attempt to get all users');
       result.delay().status(httpStatuses.FORBIDDEN);
@@ -112,6 +138,14 @@ export class UsersController {
 
   async getUser(result, user, idOrEmail) {
     // Note: this method assumes that idOrEmail has already be validated and converted to a number (if it's an ID)
+
+    this.loggers.main.debug({
+      args: {
+        result: result,
+        user: user,
+        idOrEmail: idOrEmail
+      }
+    }, 'getUser called');
 
     if (typeof idOrEmail == 'string') idOrEmail = idOrEmail.toLowerCase();
 
