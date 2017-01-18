@@ -20,6 +20,13 @@ export class UsersController {
       return;
     }
 
+    if (data === null || typeof data != 'object') {
+      result.delay().status(httpStatuses.BAD_REQUEST).data({
+        msg: 'Invalid data object'
+      });
+      return;
+    }
+
     // Removes other keys
     data = {
       email: data.email,
