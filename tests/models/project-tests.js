@@ -23,6 +23,14 @@ tests.after = async (st) => {
   st.end();
 };
 
+tests.testMethod('constructor', function (t) {
+  t.test('It should correctly parse the data from the database', function (st, project) {
+    st.equals(project.id, 'EXAMPLE');
+    st.equals(project.name, 'Example Project');
+    st.equals(project.iconUrl, 'https://www.example.com/icon.png');
+  });
+});
+
 tests.testMethod('getMembers', function (t) {
   t.test('It should return an empty list when there are no members', async function (st, project) {
     await testingDatabase.query('DELETE FROM `project_assignment` WHERE `project_id` = :projectId;', {projectId: project.id});
