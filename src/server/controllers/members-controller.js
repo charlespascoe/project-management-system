@@ -267,4 +267,10 @@ export class MembersController {
   }
 }
 
-export default new MembersController(loggers.forClass('MembersController'), projects, users, roles, authorisor);
+export default new MembersController(
+  loggers.forClass('MembersController'),
+  projects,
+  users,
+  roles,
+  authorisor
+);
