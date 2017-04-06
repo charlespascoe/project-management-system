@@ -12,7 +12,11 @@ The requirements and design documents are in the `design` folder, which explain 
 Development Setup
 -----------------
 
-`$ make init`
+Use the `create-database.sql` script in the `database` directory to create a blank database. `test-data.sql` contains some initial data to start development.
+
+In the `config` directory, copy the `example.json` file to `development.json`, and set some database credentials and logging settings.
+
+Then, run `make init`, which will setup submodules.
 
 Running in development mode
 ---------------------------
